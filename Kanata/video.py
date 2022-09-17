@@ -1,18 +1,17 @@
 import numpy as np
 import os.path
 import random
-
 from .utils import *
-
-from bolt import assets
-from bolt import file
-from bolt.options import Options
-from bolt import relations
-from bolt import tags
+from abcli.plugins.storage import instance as storage
+from abcli import objects
+from abcli import file
+from abcli.options import Options
+from abcli import relations
+from abcli import tags
 
 from . import *
 
-import bolt.logging
+import abcli.logging
 import logging
 
 logger = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ class Video(object):
             Options(options)
             .default("density", 0.5)
             .default("log", False)
-            .default("max_asset_count", -1)
+            .default("max_object_count", -1)
             .default("min_frame_count", 10)
             .default("occupancy", 0.9)
             .default("skew", 0.0)
@@ -35,7 +34,7 @@ class Video(object):
 
         self.density = options["density"]
         self.log = options["log"]
-        self.max_asset_count = options["max_asset_count"]
+        self.max_object_count = options["max_object_count"]
         self.min_frame_count = options["min_frame_count"]
         self.occupancy = options["occupancy"]
         self.skew = options["skew"]
@@ -46,7 +45,7 @@ class Video(object):
             for _ in range(frame_count)
         ]
 
-        self.asset_count = 0
+        self.object_count = 0
 
     @property
     def cols(self):
@@ -57,12 +56,10 @@ class Video(object):
         return len(self.composition)
 
     def ingest(self):
-        from bolt.storage import instance as storage
-
         logger.info(
             "video.ingest: {}{}{}".format(
-                "<={} asset(s) ".format(self.max_asset_count)
-                if self.max_asset_count != -1
+                "<={} object(s) ".format(self.max_object_count)
+                if self.max_object_count != -1
                 else "",
                 ">{:.2f} ".format(self.occupancy) if self.occupancy != -1 else "",
                 skew_as_string(self.skew),
@@ -70,52 +67,55 @@ class Video(object):
         )
 
         complete = False
-        self.asset_count = 0
+        self.object_count = 0
         ran_out = False
         while not complete:
-            if self.max_asset_count != -1 and self.asset_count >= self.max_asset_count:
+            if (
+                self.max_object_count != -1
+                and self.object_count >= self.max_object_count
+            ):
                 logger.info(
-                    "video.ingest() max asset count {} reached.".format(
-                        self.asset_count
+                    "video.ingest() max object count {} reached.".format(
+                        self.object_count
                     )
                 )
                 ran_out = True
                 break
 
-            asset = tags.search(
+            object = tags.search(
                 [
-                    "~used_for_{}".format(assets.bolt_asset_name),
+                    "~used_for_{}".format(objects.abcli_object_name),
                     "Kanata_slice_{}".format(version),
                     "face_finder",
                     "track",
                 ],
                 "count=1",
             )
-            if not asset:
+            if not object:
                 logger.info("video.ingest() ran out of slices.")
                 ran_out = True
                 break
-            self.asset_count += 1
+            self.object_count += 1
 
             if not storage.download_file(
                 storage.bucket_name,
-                "bolt/{}/Data/0/face_finder.json".format(asset),
-                "asset",
+                "abcli/{}/Data/0/face_finder.json".format(object),
+                "object",
                 "~errordump",
             ):
                 continue
 
-            relations.set_(assets.bolt_asset_name, asset, "used")
-            tags.set_(asset, "used_for_{}".format(assets.bolt_asset_name))
+            relations.set_(objects.abcli_object_name, object, "used")
+            tags.set_(object, "used_for_{}".format(objects.abcli_object_name))
 
             success, info = file.load_json(
                 os.path.join(
-                    assets.bolt_asset_root_folder, asset, "Data/0/face_finder.json"
+                    objects.abcli_object_root_folder, object, "Data/0/face_finder.json"
                 )
             )
             if not success:
                 continue
-            logger.info("{}: {} face(s) found.".format(asset, len(info["traces"])))
+            logger.info("{}: {} face(s) found.".format(object, len(info["traces"])))
 
             for face_id in info["traces"]:
                 if info["traces"][face_id]["frame_count"] < self.min_frame_count:
@@ -162,13 +162,13 @@ class Video(object):
                                 frame_,
                                 row_,
                                 col_,
-                                asset,
+                                object,
                                 face_id,
                                 index,
                             )
                         )
                     self.composition[frame_][row_][col_] = (
-                        asset,
+                        object,
                         face_id,
                         index,
                     )
@@ -241,7 +241,7 @@ class Video(object):
         return True
 
     def render(self, image_height, image_width):
-        from bolt.storage import instance as storage
+        from abcli.storage import instance as storage
 
         face_height = int(math.floor(image_height / self.rows))
         face_width = int(math.floor(image_width / self.cols))
@@ -266,23 +266,23 @@ class Video(object):
             for col in range(self.cols):
                 for row in range(self.rows):
                     if self.composition[frame][row][col] not in [None, "skip"]:
-                        asset, face_id, index = self.composition[frame][row][col]
+                        object, face_id, index = self.composition[frame][row][col]
 
                         if not storage.download_file(
                             storage.bucket_name,
-                            "bolt/{}/Data/{}/face_{:05d}.jpg".format(
-                                asset, int(face_id) + 1, index
+                            "abcli/{}/Data/{}/face_{:05d}.jpg".format(
+                                object, int(face_id) + 1, index
                             ),
-                            "asset",
+                            "object",
                             "~errordump,~log",
                         ):
                             continue
 
                         success_, image_ = file.load_image(
                             os.path.join(
-                                assets.bolt_asset_root_folder,
+                                objects.abcli_object_root_folder,
                                 "{}/Data/{}/face_{:05d}.jpg".format(
-                                    asset, int(face_id) + 1, index
+                                    object, int(face_id) + 1, index
                                 ),
                             )
                         )
@@ -320,12 +320,14 @@ class Video(object):
                         ] = image__
 
             file.save_image(
-                os.path.join(assets.bolt_asset_folder, "Data", str(frame), "info.jpg"),
+                os.path.join(
+                    objects.abcli_object_folder, "Data", str(frame), "info.jpg"
+                ),
                 sign(
                     image,
                     [
                         string.pretty_duration(self.frame_count / Kanata_output_fps),
-                        "{} asset(s)".format(self.asset_count),
+                        "{} object(s)".format(self.object_count),
                         "{}x{} x {}x{}".format(
                             self.rows, self.cols, face_height, face_width
                         ),
