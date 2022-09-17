@@ -101,8 +101,8 @@ function abcli_Kanata() {
         local do_validate=$(abcli_option_int "$options" "validate" 0)
 
         abcli_select
+        local video_object_name=$abcli_object_name
         abcli_youtube download $video_id
-        local video_object=$abcli_object_name
 
         local extra_args=""
         if [ "$do_validate" == "1" ] ; then
@@ -110,8 +110,9 @@ function abcli_Kanata() {
         fi
 
         abcli_select
-        abcli_ingest \
-            video $video_object \
+        abcli_graphics video_to_frames \
+            --source $video_object_name/video.mp4 \
+            --destination $abcli_object_name \
             --period $Kanata_period \
             --start_time $start_time \
             $extra_args \
