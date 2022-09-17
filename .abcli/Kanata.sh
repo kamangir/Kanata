@@ -13,9 +13,9 @@ function abcli_Kanata() {
     local task=$(abcli_unpack_keyword $1 help)
 
     if [ "$task" == "help" ] ; then
-        abcli_help_line "Kanata config keyword value" \
-            "config Kanata: keyword=value."
-        abcli_help_line "Kanata extract_faces [-/video_id] [-/start_time] [validate,frame_count=n]" \
+        abcli_help_line "Kanata config <keyword> <value>" \
+            "config Kanata: <keyword>=<value>."
+        abcli_help_line "Kanata extract_faces [<video_id>] [<start_time>] [validate,frame_count=<n>]" \
             "extract_faces from $Kanata_validation_video_id/video_id [starting at start_time] [considering frame_count frame(s)] [for validation]."
         abcli_help_line "Kanata find_faces object_name [validate]" \
             "find faces in object_name [for validation]."
@@ -51,18 +51,16 @@ function abcli_Kanata() {
     if [ "$task" == "extract_faces" ] ; then
         local video_id=$2
 
-        local start_time="$3"
-        if [ -z "$start_time" ] ; then
-            local start_time="0.0"
-        fi
+        local start_time=$(abcli_clarify_input $3 0.0)
 
         local options="$4"
         local do_stream=$(abcli_option_int "$options" "stream" 1)
-        local frame_count=$(abcli_option_int "$options" "frame_count" -1)
         local do_validate=$(abcli_option_int "$options" "validate" 0)
+        local frame_count=-1
         if [ "$do_validate" == "1" ] ; then
             local frame_count="25"
         fi
+        local frame_count=$(abcli_option_int "$options" frame_count $frame_count)
 
         abcli_Kanata ingest $video_id $start_time $options --frame_count $frame_count
         abcli_Kanata find_faces $abcli_object_name
@@ -80,12 +78,12 @@ function abcli_Kanata() {
     fi
 
     if [ "$task" == "find_faces" ] ; then
-        local object=$2
-        local options="$3"
+        local object_name=$2
+        local options=$3
 
         local do_validate=$(abcli_option_int "$options" "validate" 0)
 
-        abcli_select $object
+        abcli_select $object_name
         abcli_download
         abcli_face_finder \
             find \
