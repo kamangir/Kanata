@@ -1,0 +1,345 @@
+import numpy as np
+import os.path
+import random
+
+from .utils import *
+
+from bolt import assets
+from bolt import file
+from bolt.options import Options
+from bolt import relations
+from bolt import tags
+
+from . import *
+
+import bolt.logging
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class Video(object):
+    def __init__(self, cols, rows, frame_count, options=""):
+        logger.info("video: {}x{}x{}".format(frame_count, rows, cols))
+
+        options = (
+            Options(options)
+            .default("density", 0.5)
+            .default("log", False)
+            .default("max_asset_count", -1)
+            .default("min_frame_count", 10)
+            .default("occupancy", 0.9)
+            .default("skew", 0.0)
+            .default("smooth", 0)
+        )
+
+        self.density = options["density"]
+        self.log = options["log"]
+        self.max_asset_count = options["max_asset_count"]
+        self.min_frame_count = options["min_frame_count"]
+        self.occupancy = options["occupancy"]
+        self.skew = options["skew"]
+        self.smooth = options["smooth"]
+
+        self.composition = [
+            [[None for _ in range(cols)] for _ in range(rows)]
+            for _ in range(frame_count)
+        ]
+
+        self.asset_count = 0
+
+    @property
+    def cols(self):
+        return len(self.composition[0][0])
+
+    @property
+    def frame_count(self):
+        return len(self.composition)
+
+    def ingest(self):
+        from bolt.storage import instance as storage
+
+        logger.info(
+            "video.ingest: {}{}{}".format(
+                "<={} asset(s) ".format(self.max_asset_count)
+                if self.max_asset_count != -1
+                else "",
+                ">{:.2f} ".format(self.occupancy) if self.occupancy != -1 else "",
+                skew_as_string(self.skew),
+            )
+        )
+
+        complete = False
+        self.asset_count = 0
+        ran_out = False
+        while not complete:
+            if self.max_asset_count != -1 and self.asset_count >= self.max_asset_count:
+                logger.info(
+                    "video.ingest() max asset count {} reached.".format(
+                        self.asset_count
+                    )
+                )
+                ran_out = True
+                break
+
+            asset = tags.search(
+                [
+                    "~used_for_{}".format(assets.bolt_asset_name),
+                    "Kanata_slice_{}".format(version),
+                    "face_finder",
+                    "track",
+                ],
+                "count=1",
+            )
+            if not asset:
+                logger.info("video.ingest() ran out of slices.")
+                ran_out = True
+                break
+            self.asset_count += 1
+
+            if not storage.download_file(
+                storage.bucket_name,
+                "bolt/{}/Data/0/face_finder.json".format(asset),
+                "asset",
+                "~errordump",
+            ):
+                continue
+
+            relations.set_(assets.bolt_asset_name, asset, "used")
+            tags.set_(asset, "used_for_{}".format(assets.bolt_asset_name))
+
+            success, info = file.load_json(
+                os.path.join(
+                    assets.bolt_asset_root_folder, asset, "Data/0/face_finder.json"
+                )
+            )
+            if not success:
+                continue
+            logger.info("{}: {} face(s) found.".format(asset, len(info["traces"])))
+
+            for face_id in info["traces"]:
+                if info["traces"][face_id]["frame_count"] < self.min_frame_count:
+                    continue
+
+                found_None = False
+                for frame in range(self.frame_count):
+                    for row in range(self.rows):
+                        for col in range(self.cols):
+                            if self.composition[frame][row][col] is None:
+                                if random.random() >= self.density:
+                                    self.composition[frame][row][col] = "skip"
+                                    if self.log:
+                                        logger.info(
+                                            "video.render({},{},{}): skip".format(
+                                                frame, row, col
+                                            )
+                                        )
+                                    continue
+
+                                frame_ = frame
+                                row_ = row
+                                col_ = col
+                                found_None = True
+                                break
+                        if found_None:
+                            break
+                    if found_None:
+                        break
+
+                if not found_None:
+                    logger.info("composition is complete")
+                    complete = True
+                    break
+                if self.log:
+                    logger.info("video.ingest({},{},{})".format(frame_, row_, col_))
+
+                index = info["traces"][face_id]["first_frame"]
+                skew_counter = 0
+                while True:
+                    if self.log:
+                        logger.info(
+                            "video.ingest[{},{},{}]: {}/face_id={}/{}".format(
+                                frame_,
+                                row_,
+                                col_,
+                                asset,
+                                face_id,
+                                index,
+                            )
+                        )
+                    self.composition[frame_][row_][col_] = (
+                        asset,
+                        face_id,
+                        index,
+                    )
+
+                    index += 1
+                    frame_ += 1
+
+                    if index > info["traces"][face_id]["last_frame"]:
+                        if self.skew == 0:
+                            break
+                        index = info["traces"][face_id]["first_frame"]
+                    if frame_ >= self.frame_count:
+                        break
+
+                    skew_counter += 1
+                    if abs(skew_counter * self.skew) >= 1:
+                        if self.skew < 0:
+                            col_ -= 1
+                            if col_ < 0:
+                                break
+                        if self.skew > 0:
+                            col_ += 1
+                            if col_ >= self.cols:
+                                break
+                        skew_counter = 0
+
+        if ran_out:
+            logger.info("video.ingest(): cropping composition.")
+            frame = self.frame_count - 1
+            while True:
+                occupancy = float(
+                    np.mean(
+                        np.array(
+                            [
+                                float(
+                                    np.mean(
+                                        np.array(
+                                            [
+                                                int(
+                                                    self.composition[frame][row][col]
+                                                    is not None
+                                                )
+                                                for col in range(self.cols)
+                                            ]
+                                        )
+                                    )
+                                )
+                                for row in range(self.rows)
+                            ]
+                        )
+                    )
+                )
+                if occupancy >= self.occupancy:
+                    break
+
+                frame -= 1
+                if frame < 0:
+                    break
+
+            logger.info(
+                "video.render(occupancy={:.02f}) cropping at {}/{} - {:.02f}.".format(
+                    self.occupancy, frame + 1, self.frame_count, occupancy
+                )
+            )
+            self.frame_count = frame + 1
+            self.composition = [
+                self.composition[frame] for frame in range(self.frame_count)
+            ]
+
+        return True
+
+    def render(self, image_height, image_width):
+        from bolt.storage import instance as storage
+
+        face_height = int(math.floor(image_height / self.rows))
+        face_width = int(math.floor(image_width / self.cols))
+
+        logger.info(
+            "video.render: {}x{} -> {}x{}x{}{}".format(
+                face_height,
+                face_width,
+                self.frame_count,
+                image_height,
+                image_width,
+                " smooth" if self.smooth else "",
+            )
+        )
+
+        for frame in tqdm(range(self.frame_count)):
+            if self.log:
+                logger.info("video.render({}/{})".format(frame, self.frame_count))
+
+            image = np.zeros((image_height, image_width, 3), dtype=np.uint8)
+
+            for col in range(self.cols):
+                for row in range(self.rows):
+                    if self.composition[frame][row][col] not in [None, "skip"]:
+                        asset, face_id, index = self.composition[frame][row][col]
+
+                        if not storage.download_file(
+                            storage.bucket_name,
+                            "bolt/{}/Data/{}/face_{:05d}.jpg".format(
+                                asset, int(face_id) + 1, index
+                            ),
+                            "asset",
+                            "~errordump,~log",
+                        ):
+                            continue
+
+                        success_, image_ = file.load_image(
+                            os.path.join(
+                                assets.bolt_asset_root_folder,
+                                "{}/Data/{}/face_{:05d}.jpg".format(
+                                    asset, int(face_id) + 1, index
+                                ),
+                            )
+                        )
+                        if not success_:
+                            continue
+
+                        factor = min(
+                            face_height / image_.shape[0],
+                            face_width / image_.shape[1],
+                        )
+                        image_ = cv2.resize(
+                            image_,
+                            dsize=(
+                                int(factor * image_.shape[1]),
+                                int(factor * image_.shape[0]),
+                            ),
+                            interpolation=cv2.INTER_AREA,
+                        )
+
+                        dy = int((face_height - image_.shape[0]) / 2)
+                        dx = int((face_width - image_.shape[1]) / 2)
+
+                        image__ = np.zeros(
+                            (face_height, face_width, 3),
+                            dtype=np.uint8,
+                        )
+                        image__[
+                            dy : dy + image_.shape[0], dx : dx + image_.shape[1], :
+                        ] = image_
+
+                        image[
+                            row * face_height : (row + 1) * face_height,
+                            col * face_width : (col + 1) * face_width,
+                            :,
+                        ] = image__
+
+            file.save_image(
+                os.path.join(assets.bolt_asset_folder, "Data", str(frame), "info.jpg"),
+                sign(
+                    image,
+                    [
+                        string.pretty_duration(self.frame_count / Kanata_output_fps),
+                        "{} asset(s)".format(self.asset_count),
+                        "{}x{} x {}x{}".format(
+                            self.rows, self.cols, face_height, face_width
+                        ),
+                        "{:.0f} %".format(self.density * 100),
+                        skew_as_string(self.skew),
+                    ]
+                    + (["smooth"] if self.smooth else []),
+                    {"frame": frame},
+                ),
+            )
+
+    @property
+    def rows(self):
+        return len(self.composition[0])
+
+    def save_composition(self, filename):
+        return file.save_json(filename, self.composition)

@@ -1,11 +1,11 @@
 from setuptools import setup
 
-from blue_plugin import NAME, VERSION
+from Kanata import version
 
 setup(
-    name=NAME,
+    name="Kanata",
     author="kamangir",
-    version=VERSION,
-    description="template for an abcli plugin",
-    packages=[NAME],
+    version=str(version),
+    description="Kanata",
+    packages=["Kanata"],
 )
