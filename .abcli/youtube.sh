@@ -22,7 +22,7 @@ function abcli_youtube() {
             "validate youtube."
 
         if [ "$(abcli_keyword_is $2 verbose)" == true ] ; then
-            python3 -m abcli.plugins.youtube --help
+            python3 -m Kanata.youtube --help
         fi
         return
     fi
@@ -37,7 +37,7 @@ function abcli_youtube() {
     if [ "$(abcli_list_in $task cat,download,duration,is_CC)" == "True" ] ; then
         local video_id=$2
 
-        python3 -m abcli.plugins.youtube \
+        python3 -m Kanata.youtube \
             $task \
             --video_id "$video_id" \
             ${@:3}
@@ -51,7 +51,7 @@ function abcli_youtube() {
     fi
 
     if [ "$task" == "search" ] ; then
-        python3 -m abcli.plugins.youtube \
+        python3 -m Kanata.youtube \
             search \
             --keyword "$2" \
             ${@:3}
@@ -72,7 +72,7 @@ function abcli_youtube() {
     fi
 
     if [ "$task" == "validate" ] ; then
-        python3 -m abcli.plugins.youtube \
+        python3 -m Kanata.youtube \
             validate \
             ${@:2}
         return
