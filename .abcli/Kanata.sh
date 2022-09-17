@@ -16,21 +16,21 @@ function abcli_Kanata() {
         abcli_help_line "Kanata config <keyword> <value>" \
             "config Kanata: <keyword>=<value>."
         abcli_help_line "Kanata extract_faces [<video_id>] [<start_time>] [validate,frame_count=<n>]" \
-            "extract_faces from $Kanata_validation_video_id/video_id [starting at start_time] [considering frame_count frame(s)] [for validation]."
-        abcli_help_line "Kanata find_faces object_name [validate]" \
-            "find faces in object_name [for validation]."
-        abcli_help_line "Kanata ingest [video_id] [start_time] [validate]" \
-            "ingest $Kanata_validation_video_id/video_id [starting at start_time] [for validation]."
-        abcli_help_line "Kanata register video_id_1,video_id_2" \
-            "register video_id_1,video_id_2."
-        abcli_help_line "Kanata render [video_length] [validate]" \
-            "render a video_length-second [validation] video."
-        abcli_help_line "Kanata slice [-/video_id] [validate]" \
-            "slice $Kanata_validation_video_id/video_id [for validation]."
+            "[vaidate] extract faces  [from <video_id>]."
+        abcli_help_line "Kanata find_faces    [<object_name>]             [validate]" \
+            "[validate] find faces   [in <object_name>]."
+        abcli_help_line "Kanata ingest        [<video_id>] [<start_time>] [validate]" \
+            "[validate] ingest        [<video_id>]."
+        abcli_help_line "Kanata register       <video_id_1,video_id_2>" \
+            "register                 <video_id_1,video_id_2>."
+        abcli_help_line "Kanata render [<video_length>] [validate]" \
+            "[validate] render a video."
+        abcli_help_line "Kanata slice [<video_id>] [validate]" \
+            "[validate] slice         [<video_id>]."
         abcli_help_line "Kanata status" \
             "show status of Kanata."
-        abcli_help_line "Kanata track_faces object_name [validate]" \
-            "track faces in object_name [for validation]."
+        abcli_help_line "Kanata track_faces <object_name> [validate]" \
+            "track faces in <object_name> [for validation]."
         abcli_help_line "Kanata validate" \
             "validate Kanata."
 
@@ -94,27 +94,15 @@ function abcli_Kanata() {
     fi
 
     if [ "$task" == "ingest" ] ; then
-        local video_id=$2
-        if [ "$video_id" == "-" ] ; then
-            local video_id=""
-        fi
-        if [ -z "$video_id" ] ; then
-            local video_id=$Kanata_validation_video_id
-        fi
-
-        local start_time="$3"
-        if [ "$start_time" == "-" ] ; then
-            local start_time=""
-        fi
-        if [ -z "$start_time" ] ; then
-            local start_time="0.0"
-        fi
+        local video_id=$(abcli_clarify_input $2 $Kanata_validation_video_id)
+        local start_time=$(abcli_clarify_input $3 0.0)
 
         local options="$4"
         local do_validate=$(abcli_option_int "$options" "validate" 0)
 
         abcli_select
         abcli_youtube download $video_id
+        local video_object=$abcli_object_name
 
         local extra_args=""
         if [ "$do_validate" == "1" ] ; then
@@ -123,8 +111,7 @@ function abcli_Kanata() {
 
         abcli_select
         abcli_ingest \
-            video \
-            .. \
+            video $video_object \
             --period $Kanata_period \
             --start_time $start_time \
             $extra_args \
@@ -138,6 +125,8 @@ function abcli_Kanata() {
         local list_of_video_id=$(echo "$list_of_video_id" | tr , " ")
 
         local cw_version=$(abcli_Kanata_version)
+
+        local video_id
         for video_id in $list_of_video_id ; do
             abcli_log "Kanata.register($video_id)"
             local check=$(abcli_youtube is_CC $video_id)
@@ -147,14 +136,17 @@ function abcli_Kanata() {
             fi
             abcli_log "validated that youtube/$video_id is licensed under Creative Commons."
 
-            abcli_tag set $video_id Kanata_video_id_$cw_version,youtube_video_id ${@:3}
+            abcli_tag set \
+                $video_id \
+                Kanata_video_id_$cw_version,youtube_video_id \
+                ${@:3}
         done
 
         return
     fi
 
     if [ "$task" == "render" ] ; then
-        local video_length=$(abcli_arg_get "$2" "1")
+        local video_length=$(abcli_arg_clarify $2 1)
         let "frame_count = $Kanata_output_fps * $video_length" 
 
         local options=$(abcli_unpack_keyword $3)
@@ -183,7 +175,7 @@ function abcli_Kanata() {
         abcli_create_video info.jpg info fps=$Kanata_output_fps
 
         abcli_upload open
-        abcli_publish . info.mp4
+        abcli_publish $abcli_object_name info.mp4
 
         return
     fi
