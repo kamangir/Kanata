@@ -5,6 +5,10 @@ export Kanata_output_fps=10
 export Kanata_plan_video_slice_in_seconds=60
 export Kanata_validation_video_id="7AKXh0CrNXo"
 
+function Kanata() {
+    abcli_Kanata $@
+}
+
 function abcli_Kanata() {
     local task=$(abcli_unpack_keyword $1 help)
 
@@ -13,8 +17,8 @@ function abcli_Kanata() {
             "config Kanata: keyword=value."
         abcli_help_line "Kanata extract_faces [-/video_id] [-/start_time] [validate,frame_count=n]" \
             "extract_faces from $Kanata_validation_video_id/video_id [starting at start_time] [considering frame_count frame(s)] [for validation]."
-        abcli_help_line "Kanata find_faces asset_name [validate]" \
-            "find faces in asset_name [for validation]."
+        abcli_help_line "Kanata find_faces object_name [validate]" \
+            "find faces in object_name [for validation]."
         abcli_help_line "Kanata ingest [video_id] [start_time] [validate]" \
             "ingest $Kanata_validation_video_id/video_id [starting at start_time] [for validation]."
         abcli_help_line "Kanata register video_id_1,video_id_2" \
@@ -25,8 +29,8 @@ function abcli_Kanata() {
             "slice $Kanata_validation_video_id/video_id [for validation]."
         abcli_help_line "Kanata status" \
             "show status of Kanata."
-        abcli_help_line "Kanata track_faces asset_name [validate]" \
-            "track faces in asset_name [for validation]."
+        abcli_help_line "Kanata track_faces object_name [validate]" \
+            "track faces in object_name [for validation]."
         abcli_help_line "Kanata validate" \
             "validate Kanata."
 
@@ -61,31 +65,31 @@ function abcli_Kanata() {
         fi
 
         abcli_Kanata ingest $video_id $start_time $options --frame_count $frame_count
-        abcli_Kanata find_faces $abcli_asset_name
-        abcli_Kanata track_faces $abcli_asset_name
+        abcli_Kanata find_faces $abcli_object_name
+        abcli_Kanata track_faces $abcli_object_name
 
-        abcli_cache write $abcli_asset_name.video_id $video_id
-        abcli_cache write $abcli_asset_name.start_time $start_time
+        abcli_cache write $abcli_object_name.video_id $video_id
+        abcli_cache write $abcli_object_name.start_time $start_time
 
         if [ "$do_stream" == "1" ] ; then
             abcli_upload open
-            abcli_message stream $abcli_asset_name
+            abcli_message stream $abcli_object_name
         fi
 
         return
     fi
 
     if [ "$task" == "find_faces" ] ; then
-        local asset=$2
+        local object=$2
         local options="$3"
 
         local do_validate=$(abcli_option_int "$options" "validate" 0)
 
-        abcli_select $asset
+        abcli_select $object
         abcli_download
         abcli_face_finder \
-            find asset \
-            $asset - \
+            find object \
+            $object - \
             --visualize $do_validate
 
         return
@@ -201,7 +205,7 @@ function abcli_Kanata() {
         abcli_select
         abcli_youtube download $video_id
 
-        local duration=$(abcli_graphics duration_of_video --filename $abcli_asset_folder/video.mp4)
+        local duration=$(abcli_graphics duration_of_video --filename $abcli_object_path/video.mp4)
         let "last_slice = $duration / $Kanata_plan_video_slice_in_seconds"
         if [ "$do_validate" == "1" ] ; then
             local last_slice="2"
@@ -231,16 +235,16 @@ function abcli_Kanata() {
     fi
 
     if [ "$task" == "track_faces" ] ; then
-        local asset=$2
+        local object=$2
         local options="$3"
 
         local do_validate=$(abcli_option_int "$options" "validate" 0)
 
-        abcli_download asset $asset
+        abcli_download object $object
 
         abcli_select
         abcli_face_finder \
-            track $asset \
+            track $object \
             --period $Kanata_period \
             --visualize $do_validate \
             --crop 1
@@ -253,7 +257,7 @@ function abcli_Kanata() {
         return
     fi
 
-    abcli_log_error "unknown task: Kanata '$task'."
+    abcli_log_error "-Kanata: $task: command not found."
 }
 
 function abcli_Kanata_version() {
