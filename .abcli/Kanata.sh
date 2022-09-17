@@ -88,8 +88,8 @@ function abcli_Kanata() {
         abcli_select $object
         abcli_download
         abcli_face_finder \
-            find object \
-            $object - \
+            find \
+            object $object - \
             --visualize $do_validate
 
         return
@@ -235,16 +235,16 @@ function abcli_Kanata() {
     fi
 
     if [ "$task" == "track_faces" ] ; then
-        local object=$2
+        local object_name=$2
+
         local options="$3"
+        local do_validate=$(abcli_option_int "$options" validate 0)
 
-        local do_validate=$(abcli_option_int "$options" "validate" 0)
-
-        abcli_download object $object
+        abcli_download object $object_name
 
         abcli_select
         abcli_face_finder \
-            track $object \
+            track $object_name \
             --period $Kanata_period \
             --visualize $do_validate \
             --crop 1
