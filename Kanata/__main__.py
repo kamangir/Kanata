@@ -1,5 +1,5 @@
 import argparse
-from abcli.plugins import jobs
+from blue_worker import jobs
 from . import *
 from .consts import *
 import abcli.logging
