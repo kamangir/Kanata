@@ -18,27 +18,28 @@ logger = logging.getLogger(__name__)
 
 
 class Video(object):
-    def __init__(self, cols, rows, frame_count, options=""):
-        logger.info("video: {}x{}x{}".format(frame_count, rows, cols))
+    def __init__(
+        self,
+        cols,
+        rows,
+        frame_count,
+        density=0.5,
+        log=False,
+        max_object_count=-1,
+        min_frame_count=10,
+        occupancy=0.9,
+        skew=0.0,
+        smooth=0,
+    ):
+        logger.info(f"{NAME}.Video: {frame_count}x{rows}x{cols}")
 
-        options = (
-            Options(options)
-            .default("density", 0.5)
-            .default("log", False)
-            .default("max_object_count", -1)
-            .default("min_frame_count", 10)
-            .default("occupancy", 0.9)
-            .default("skew", 0.0)
-            .default("smooth", 0)
-        )
-
-        self.density = options["density"]
-        self.log = options["log"]
-        self.max_object_count = options["max_object_count"]
-        self.min_frame_count = options["min_frame_count"]
-        self.occupancy = options["occupancy"]
-        self.skew = options["skew"]
-        self.smooth = options["smooth"]
+        self.density = density
+        self.log = log
+        self.max_object_count = max_object_count
+        self.min_frame_count = min_frame_count
+        self.occupancy = occupancy
+        self.skew = skew
+        self.smooth = smooth
 
         self.composition = [
             [[None for _ in range(cols)] for _ in range(rows)]
