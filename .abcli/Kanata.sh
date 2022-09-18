@@ -54,8 +54,8 @@ function abcli_Kanata() {
         local start_time=$(abcli_clarify_input $3 0.0)
 
         local options="$4"
-        local do_stream=$(abcli_option_int "$options" "stream" 1)
-        local do_validate=$(abcli_option_int "$options" "validate" 0)
+        local do_stream=$(abcli_option_int "$options" stream 1)
+        local do_validate=$(abcli_option_int "$options" validate 0)
         local frame_count=-1
         if [ "$do_validate" == "1" ] ; then
             local frame_count="25"
@@ -81,7 +81,7 @@ function abcli_Kanata() {
         local object_name=$2
         local options=$3
 
-        local do_validate=$(abcli_option_int "$options" "validate" 0)
+        local do_validate=$(abcli_option_int "$options" validate 0)
 
         abcli_select $object_name
         abcli_download
@@ -98,7 +98,7 @@ function abcli_Kanata() {
         local start_time=$(abcli_clarify_input $3 0.0)
 
         local options="$4"
-        local do_validate=$(abcli_option_int "$options" "validate" 0)
+        local do_validate=$(abcli_option_int "$options" validate 0)
 
         abcli_select
         local video_object_name=$abcli_object_name
@@ -151,7 +151,7 @@ function abcli_Kanata() {
         let "frame_count = $Kanata_output_fps * $video_length" 
 
         local options=$(abcli_unpack_keyword $3)
-        local do_validate=$(abcli_option_int "$options" "validate" 0)
+        local do_validate=$(abcli_option_int "$options" validate 0)
 
         local extra_args=""
         if [ "$do_validate" == "1" ] ; then
@@ -191,7 +191,7 @@ function abcli_Kanata() {
         fi
 
         local options="$3"
-        local do_validate=$(abcli_option_int "$options" "validate" 0)
+        local do_validate=$(abcli_option_int "$options" validate 0)
 
         abcli_select
         abcli_youtube download $video_id
