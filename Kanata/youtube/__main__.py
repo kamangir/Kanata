@@ -59,6 +59,5 @@ elif args.task == "validate":
 else:
     logger.error(f"-{NAME}: {args.task}: command not found.")
 
-
 if not success:
     logger.error(f"-{NAME}: {args.task}: failed.")

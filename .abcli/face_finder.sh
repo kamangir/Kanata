@@ -4,13 +4,13 @@ function abcli_face_finder() {
     local task=$(abcli_unpack_keyword $1 help)
 
     if [ "$task" == "help" ] ; then
-        abcli_help_line "face_finder find object   <object-name> [<filename.jpg>]" \
+        abcli_show_usage "face_finder find object   <object-name> [<filename.jpg>]" \
             "find faces in <object-name>[/<filename.jpg>]"
-        abcli_help_line "face_finder find filename <filename.jpg>" \
+        abcli_show_usage "face_finder find filename <filename.jpg>" \
             "find faces in <filename.jpg>."
-        abcli_help_line "face_finder install" \
+        abcli_show_usage "face_finder install" \
             "install face_finder."
-        abcli_help_line "face_finder track <object-name>" \
+        abcli_show_usage "face_finder track <object-name>" \
             "track faces in <object-name>."
 
         if [ "$(abcli_keyword_is $2 verbose)" == true ] ; then

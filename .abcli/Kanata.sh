@@ -13,25 +13,25 @@ function abcli_Kanata() {
     local task=$(abcli_unpack_keyword $1 help)
 
     if [ "$task" == "help" ] ; then
-        abcli_help_line "Kanata config <keyword> <value>" \
+        abcli_show_usage "Kanata config <keyword> <value>" \
             "config Kanata: <keyword>=<value>."
-        abcli_help_line "Kanata extract_faces [<video_id>] [<start_time>] [validate,frame_count=<n>]" \
+        abcli_show_usage "Kanata extract_faces [<video_id>] [<start_time>] [validate,frame_count=<n>]" \
             "[vaidate] extract faces  [from <video_id>]."
-        abcli_help_line "Kanata find_faces    [<object_name>]             [validate]" \
+        abcli_show_usage "Kanata find_faces    [<object_name>]             [validate]" \
             "[validate] find faces   [in <object_name>]."
-        abcli_help_line "Kanata ingest        [<video_id>] [<start_time>] [validate]" \
+        abcli_show_usage "Kanata ingest        [<video_id>] [<start_time>] [validate]" \
             "[validate] ingest        [<video_id>]."
-        abcli_help_line "Kanata register       <video_id_1,video_id_2>" \
+        abcli_show_usage "Kanata register       <video_id_1,video_id_2>" \
             "register                 <video_id_1,video_id_2>."
-        abcli_help_line "Kanata render [<video_length>] [validate]" \
+        abcli_show_usage "Kanata render [<video_length>] [validate]" \
             "[validate] render a video."
-        abcli_help_line "Kanata slice [<video_id>] [validate]" \
+        abcli_show_usage "Kanata slice [<video_id>] [validate]" \
             "[validate] slice         [<video_id>]."
-        abcli_help_line "Kanata status" \
+        abcli_show_usage "Kanata status" \
             "show status of Kanata."
-        abcli_help_line "Kanata track_faces <object_name> [validate]" \
+        abcli_show_usage "Kanata track_faces <object_name> [validate]" \
             "track faces in <object_name> [for validation]."
-        abcli_help_line "Kanata validate" \
+        abcli_show_usage "Kanata validate" \
             "validate Kanata."
 
         if [ "$(abcli_keyword_is $2 verbose)" == true ] ; then

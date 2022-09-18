@@ -1,13 +1,14 @@
 import argparse
 from abcli.plugins import jobs
 from . import *
+from .consts import *
 import abcli.logging
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-parser = argparse.ArgumentParser("Kanata", description="Kanata-{:.2f}".format(VERSION))
+parser = argparse.ArgumentParser(NAME, description=f"{NAME}-{VERSION:.2f}")
 parser.add_argument(
     "task",
     type=str,
@@ -103,7 +104,7 @@ elif args.task == "render":
         }
     )
 elif args.task == "status":
-    print("version: {}".format(version))
+    print("version: {version}")
     print(
         "video_id: {}".format(
             jobs.flow("Kanata_video_id_{}".format(version), "Kanata_worker", "~html")
@@ -122,7 +123,7 @@ elif args.task == "status":
 
     success = True
 else:
-    logger.error('Kanata: unknown task "{}".'.format(args.task))
+    logger.error(f"-{NAME}: {args.task}: command not found.")
 
 if not success:
-    logger.error("Kanata({}): failed.".format(args.task))
+    logger.error(f"-{NAME}: {args.task}: failed.")
