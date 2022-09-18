@@ -2,7 +2,7 @@
 
 function abcli_graphics_video_to_frames()
 {
-    local task=$(abcli_unpack_keyword $1)
+    local task=$(abcli_unpack_keyword $1 help)
 
     if [ "$task" == "help" ] ; then
         abcli_show_usage "abcli graphics video_to_frames <path/video.mp4> <object-name> [<args>]" \
