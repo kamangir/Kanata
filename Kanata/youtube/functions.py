@@ -6,6 +6,7 @@ import urllib.request
 from abcli import file
 from abcli import string
 from abcli.modules.cookie import cookie
+from . import NAME
 import abcli.logging
 import logging
 
@@ -29,7 +30,8 @@ def download(video_id, filename=""):
         yt = YouTube(f"https://www.youtube.com/watch?v={video_id}")
 
         logger.info(
-            'youtube.download({}->{}): "{}"'.format(
+            '{}.download({}->{}): "{}"'.format(
+                NAME,
                 video_id,
                 os.getenv("abcli_asset_name", ""),
                 yt.title,
@@ -47,7 +49,8 @@ def download(video_id, filename=""):
     duration_ = duration(video_id)
 
     logger.info(
-        "youtube.download({}): {} - {} s = {}".format(
+        "{}.download({}): {} - {} s = {}".format(
+            NAME,
             video_id,
             string.pretty_bytes(file.size(filename)),
             duration_,
@@ -123,15 +126,11 @@ def info(video_id, part="contentDetails"):
 def is_CC(video_id):
     items = info(video_id, "status").get("items", [])
     if not items:
-        logger.error(f"youtube.is_CC({video_id}) failed, no items.")
+        logger.error(f"{NAME}.is_CC({video_id}) failed, no items.")
         return False
 
     if len(items) > 1:
-        logger.info(
-            "warning! youtube.is_CC({}): {} status item(s).".format(
-                video_id, len(items)
-            )
-        )
+        logger.info(f"warning! {NAME}.is_CC({video_id}): {len(items)} status item(s).")
 
     return items[0].get("status", {}).get("license", "") == "creativeCommon"
 
@@ -140,5 +139,5 @@ def validate():
     from apiclient.discovery import build
 
     youtube = build("youtube", "v3", developerKey=api_key)
-    logger.info(f"youtube.validate(): {type(youtube)}")
+    logger.info(f"{NAME}.validate(): {type(youtube)}")
     return True
