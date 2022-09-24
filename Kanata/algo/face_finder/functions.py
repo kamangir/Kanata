@@ -34,7 +34,7 @@ def find(
         "{}.find({}{})".format(
             NAME,
             source,
-            "/{}".format(frame if str(frame) else ""),
+            "/{}".format(filename if str(filename) else ""),
         )
     )
 
@@ -82,7 +82,7 @@ def find(
                 image = render(image, face)
 
             if sign:
-                image = sign(
+                image = add_signature(
                     image,
                     [
                         f"{len(list_of_faces)} face(s)",
@@ -95,7 +95,7 @@ def find(
                             )
                         ),
                     ],
-                    {"frame": path.name(file.path(filename_))},
+                    {"filename": path.name(file.path(filename_))},
                 )
 
             file.save_image(
@@ -171,6 +171,7 @@ def track(
     missing_frames=2,
     period=0.1,
     visualize=False,
+    **kwargs,
 ):
     list_of_frames = objects.list_of_frames(source, "name,str")
     logger.info(
@@ -246,7 +247,7 @@ def track(
             for frame_ in list_of_frames_:
                 for index_, face_ in enumerate(output["frames"][frame_]["faces"]):
                     if (
-                        match(info["faces"][index], face_, options)
+                        match(info["faces"][index], face_, **kwargs)
                         and face_.get("id", -1) not in used_face_ids
                         and face_.get("id", -1) != -1
                     ):
@@ -347,11 +348,11 @@ def track(
                 os.path.join(
                     objects.path_of(destination), "Data", str(face_id), "info.jpg"
                 ),
-                sign(
+                add_signature(
                     graphics.combine_images(
                         [
-                            filename
-                            for filename in file.list_of(
+                            filename_
+                            for filename_ in file.list_of(
                                 os.path.join(
                                     objects.path_of(destination),
                                     "Data",
@@ -359,7 +360,7 @@ def track(
                                     "*.jpg",
                                 )
                             )
-                            if file.name(filename).startswith("face_")
+                            if file.name(filename_).startswith("face_")
                         ]
                     ),
                     [
@@ -383,7 +384,7 @@ def track(
     if visualize:
         file.save_image(
             os.path.join(abcli_object_root, destination, "Data", "0", "info.jpg"),
-            sign(
+            add_signature(
                 foreground,
                 [
                     "{} frames(s)".format(len(list_of_frames)),
@@ -444,8 +445,7 @@ def track(
     return True
 
 
-def sign(image, content=[], options=""):
-    options = Options(options).default("frame", None)
+def add_signature(image, content=[], filename=None):
     return graphics.add_signature(
         image,
         [

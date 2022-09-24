@@ -4,6 +4,7 @@ from tqdm import *
 import os
 from abcli import file
 from abcli import string
+from . import NAME
 import abcli.logging
 import logging
 
@@ -27,7 +28,8 @@ def video_to_frames(
     )
 
     logger.info(
-        "graphics.video_to_frames({}:{}) -{}-@ {}-{} frame(s)-> {}".format(
+        "{}.video_to_frames({}:{}) -{}-@ {}-{} frame(s)-> {}".format(
+            NAME,
             filename,
             string.pretty_duration(duration, short=True),
             string.pretty_duration(start_time),
@@ -48,7 +50,7 @@ def video_to_frames(
             break
 
         file.save_image(
-            os.path.join(destination, "Data", str(frame), "camera.jpg"),
+            os.path.join(destination, f"{frame:010d}.jpg"),
             np.flip(image, axis=2),
         )
 

@@ -40,7 +40,7 @@ def render(
     return video.render(image_height, image_width)
 
 
-def sign(image, content=[], frame=None):
+def add_signature(image, content=[], frame=None):
     return graphics.add_signature(
         image,
         [

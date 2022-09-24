@@ -324,7 +324,7 @@ class Video(object):
                 os.path.join(
                     objects.abcli_object_folder, "Data", str(frame), "info.jpg"
                 ),
-                sign(
+                add_signature(
                     image,
                     [
                         string.pretty_duration(self.frame_count / Kanata_output_fps),

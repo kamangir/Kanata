@@ -22,10 +22,7 @@ function abcli_face_finder() {
     if [ "$task" == "find" ] ; then
         local source=$(abcli_clarify_object $3 .)
 
-        local frame="$4"
-        if [ "$frame" == "-" ] ; then
-            local frame=""
-        fi
+        local frame=$(abcli_clarify_input $4)
 
         local kind=$2
         if [ "$kind" == "object" ] ; then
@@ -34,8 +31,8 @@ function abcli_face_finder() {
 
         python3 -m Kanata.algo.face_finder \
             find \
-            --kind $kind \
-            --source $source \
+            --kind "$kind" \
+            --source "$source" \
             --frame "$frame" \
             ${@:5}
 

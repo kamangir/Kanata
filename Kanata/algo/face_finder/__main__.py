@@ -13,7 +13,7 @@ parser.add_argument(
     help="find|track",
 )
 parser.add_argument(
-    "--area_score",
+    "--area_threshold",
     type=float,
     default=0.8,
 )
@@ -37,7 +37,7 @@ parser.add_argument(
     "--kind",
     type=str,
     default="",
-    help="image/asset",
+    help="image|object",
 )
 parser.add_argument(
     "--missing_frames",
@@ -51,7 +51,7 @@ parser.add_argument(
     default=0.1,
 )
 parser.add_argument(
-    "--position_score",
+    "--position_threshold",
     type=float,
     default=0.8,
 )
@@ -64,39 +64,36 @@ parser.add_argument(
     "--visualize",
     type=int,
     default=0,
-    help="0/1",
+    help="0|1",
 )
 args = parser.parse_args()
 
 success = False
 if args.task == "find":
-    if args.kind not in "asset,filename".split(","):
-        logger.error('face_finder.find(): unknown kind: "{}".'.format(args.kind))
+    if args.kind not in "object,filename".split(","):
+        logger.error(f"-{NAME}: find: {args.kind}: kind not found.")
         success = False
     else:
         success, _ = find(
             args.source,
-            {
-                "asset": args.kind == "asset",
-                "frame": args.frame,
-                "visualize": args.visualize,
-            },
+            in_object=args.kind == "object",
+            frame=args.frame,
+            visualize=args.visualize,
         )
 elif args.task == "track":
     success = track(
         args.source,
         args.destination,
-        {
-            "area_score": args.area_score,
-            "crop": args.crop,
-            "missing_frames": args.missing_frames,
-            "period": args.period,
-            "position_score": args.position_score,
-            "visualize": args.visualize,
-        },
+        crop=args.crop,
+        missing_frames=args.missing_frames,
+        period=args.period,
+        visualize=args.visualize,
+        # for match()
+        area_threshold=args.area_threshold,
+        position_threshold=args.position_threshold,
     )
 else:
-    logger.error('face_finder: unknown task "{}".'.format(args.task))
+    logger.error(f"-{NAME}: {args.task}: command not found.")
 
 if not success:
-    logger.error("face_finder({}): failed.".format(args.task))
+    logger.error(f"-{NAME}: {args.task}: failed.")
