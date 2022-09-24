@@ -32,7 +32,7 @@ function abcli_face_finder() {
             abcli_tag set $source face_finder,find,info
         fi
 
-        python3 -m abcli.algo.face_finder \
+        python3 -m Kanata.algo.face_finder \
             find \
             --kind $kind \
             --source $source \
@@ -57,7 +57,7 @@ function abcli_face_finder() {
 
         abcli_relation set $object_name $abcli_object_name produced
 
-        python3 -m abcli.algo.face_finder \
+        python3 -m Kanata.algo.face_finder \
             track \
             --source $object_name \
             --destination $abcli_object_name \
