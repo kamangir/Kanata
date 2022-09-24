@@ -95,7 +95,7 @@ def find(
                             )
                         ),
                     ],
-                    {"filename": path.name(file.path(filename_))},
+                    filename: path.name(file.path(filename_)),
                 )
 
             file.save_image(
@@ -149,14 +149,14 @@ def match(
 def render(image, face, color=3 * (127,)):
     x, y, width, height = face["box"]
 
-    cv2.rectangle(image, (x, y), (x + width, y + height), options["color"], 2)
+    cv2.rectangle(image, (x, y), (x + width, y + height), color, 2)
     graphics.add_label(
         image, x + width, y + height, "{:.2f}".format(face["confidence"])
     )
 
     for location in face["keypoints"].values():
         cv2.circle(image, location, radius=4, color=3 * (0,), thickness=-1)
-        cv2.circle(image, location, radius=2, color=options["color"], thickness=-1)
+        cv2.circle(image, location, radius=2, color=color, thickness=-1)
 
     if face.get("id", -1) != -1:
         graphics.add_label(image, x, y, "#{}".format(face["id"]))

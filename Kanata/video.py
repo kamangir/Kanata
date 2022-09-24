@@ -336,7 +336,7 @@ class Video(object):
                         skew_as_string(self.skew),
                     ]
                     + (["smooth"] if self.smooth else []),
-                    {"frame": frame},
+                    filename=filename,
                 ),
             )
 

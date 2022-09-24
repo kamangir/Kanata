@@ -1,10 +1,11 @@
 import os.path
-from abcli import assets
-from abcli import graphics
-from abcli import host
+from abcli import file
 from abcli import string
+from abcli.modules import objects
+from abcli.modules import host
+from abcli.plugins import graphics
 from abcli.plugins.storage import instance as storage
-from . import version
+from . import version, NAME
 from .consts import *
 from .video import Video
 import abcli.logging
@@ -22,9 +23,7 @@ def render(
 ):
 
     logger.info(
-        "Kanata.render({}): {}x{}".format(
-            assets.abcli_asset_name, image_height, image_width
-        )
+        f"{NAME}.render({objects.abcli_object_name}): {image_height}x{image_width}"
     )
 
     video = Video(cols, rows, frame_count)
@@ -33,19 +32,19 @@ def render(
         return False
 
     if not video.save_composition(
-        os.path.join(assets.abcli_asset_folder, "composition.json")
+        os.path.join(objects.abcli_object_folder, "composition.json")
     ):
         return False
 
     return video.render(image_height, image_width)
 
 
-def add_signature(image, content=[], frame=None):
+def add_signature(image, content=[], filename=None):
     return graphics.add_signature(
         image,
         [
             " | ".join(host.signature()),
-            " | ".join(assets.signature(frame)),
+            " | ".join(objects.signature(file.name(filename))),
         ],
         [
             " | ".join(
