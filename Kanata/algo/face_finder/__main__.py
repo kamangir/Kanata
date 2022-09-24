@@ -21,7 +21,7 @@ parser.add_argument(
     "--crop",
     type=int,
     default=0,
-    help="0/1",
+    help="0|1",
 )
 parser.add_argument(
     "--destination",
@@ -43,7 +43,6 @@ parser.add_argument(
     "--missing_frames",
     type=int,
     default=2,
-    help="",
 )
 parser.add_argument(
     "--period",

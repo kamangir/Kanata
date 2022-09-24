@@ -383,7 +383,7 @@ def track(
 
     if visualize:
         file.save_image(
-            os.path.join(abcli_object_root, destination, "Data", "0", "info.jpg"),
+            os.path.join(abcli_object_root, destination, "info.jpg"),
             add_signature(
                 foreground,
                 [
@@ -403,7 +403,7 @@ def track(
         )
 
         file.save_image(
-            os.path.join(abcli_object_root, destination, "Data", "0", "background.jpg"),
+            os.path.join(abcli_object_root, destination, "background.jpg"),
             background,
         )
 
@@ -438,7 +438,7 @@ def track(
         }
 
     file.save_json(
-        os.path.join(abcli_object_root, destination, "Data", "0", "face_finder.json"),
+        os.path.join(abcli_object_root, destination, f"{NAME}.json"),
         output,
     )
 
@@ -450,11 +450,16 @@ def add_signature(image, content=[], filename=None):
         image,
         [
             " | ".join(host.signature()),
-            " | ".join(objects.signature(frame)),
+            " | ".join(objects.signature(filename)),
         ],
         [
             " | ".join(
-                ["face_finder", "MTCNN", string.pretty_size_of_matrix(image)] + content
-            )
+                [
+                    NAME,
+                    "MTCNN",
+                    string.pretty_shape_of_matrix(image),
+                ]
+                + content
+            ),
         ],
     )

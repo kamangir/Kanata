@@ -16,7 +16,6 @@ parser.add_argument(
     "--keyword",
     type=str,
     default="",
-    help="",
 )
 parser.add_argument(
     "--part",
@@ -28,7 +27,6 @@ parser.add_argument(
     "--video_id",
     type=str,
     default="",
-    help="",
 )
 parser.add_argument(
     "--what",

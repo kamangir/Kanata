@@ -13,73 +13,63 @@ parser.add_argument(
     "task",
     type=str,
     default="",
-    help="get_version,render,status",
+    help="get_version|render|status",
 )
 parser.add_argument(
     "--cols",
     type=int,
     default=12,
-    help="",
 )
 parser.add_argument(
     "--density",
     type=float,
     default=0.5,
-    help="",
 )
 parser.add_argument(
     "--frame_count",
     type=int,
     default=120,
-    help="",
 )
 parser.add_argument(
     "--image_height",
     type=int,
     default=1600,
-    help="",
 )
 parser.add_argument(
     "--image_width",
     type=int,
     default=2560,
-    help="",
 )
 parser.add_argument(
     "--max_asset_count",
     type=int,
     default=-1,
-    help="",
 )
 parser.add_argument(
     "--min_frame_count",
     type=int,
     default=10,
-    help="",
 )
 parser.add_argument(
     "--occupancy",
     type=float,
     default=0.9,
-    help="",
 )
 parser.add_argument(
     "--rows",
     type=int,
     default=6,
-    help="",
 )
 parser.add_argument(
     "--skew",
     type=float,
     default=0.2,
-    help="",
 )
 parser.add_argument(
     "--smooth",
     type=int,
     default=0,
-    help="0/1",
+    help="0|1",
 )
 args = parser.parse_args()
 

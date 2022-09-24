@@ -1,3 +1,3 @@
 NAME = "Kanata"
 
-VERSION = "2.92.1"
+VERSION = "2.95.1"
