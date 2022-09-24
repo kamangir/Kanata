@@ -112,7 +112,7 @@ function abcli_Kanata() {
         abcli_select
         abcli_graphics \
             video_to_frames \
-            $video_object_name/video.mp4 \
+            $abcli_object_root/$video_object_name/video.mp4 \
             $abcli_object_name \
             --period $Kanata_period \
             --start_time $start_time \

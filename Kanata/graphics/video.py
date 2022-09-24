@@ -29,8 +29,8 @@ def video_to_frames(
     logger.info(
         "graphics.video_to_frames({}:{}) -{}-@ {}-{} frame(s)-> {}".format(
             filename,
-            string.pretty_time(duration, "short"),
-            string.pretty_time(start_time),
+            string.pretty_duration(duration, short=True),
+            string.pretty_duration(start_time),
             string.pretty_frequency(1.0 / period),
             frame_count,
             destination,

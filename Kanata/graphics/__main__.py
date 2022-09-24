@@ -19,6 +19,11 @@ parser.add_argument(
     default="",
 )
 parser.add_argument(
+    "--filename",
+    type=str,
+    default="",
+)
+parser.add_argument(
     "--frame_count",
     type=int,
     default=-1,
