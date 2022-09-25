@@ -20,26 +20,34 @@ def render(
     rows=6,
     image_height=1600,
     image_width=2560,
+    **kwargs,
 ):
 
     logger.info(
         f"{NAME}.render({objects.abcli_object_name}): {image_height}x{image_width}"
     )
 
-    video = Video(cols, rows, frame_count)
+    video = Video(cols, rows, frame_count, **kwargs)
 
     if not video.ingest():
         return False
 
     if not video.save_composition(
-        os.path.join(objects.abcli_object_folder, "composition.json")
+        os.path.join(
+            os.getenv("abcli_object_path", ""),
+            "composition.json",
+        )
     ):
         return False
 
     return video.render(image_height, image_width)
 
 
-def add_signature(image, content=[], filename=None):
+def add_signature(
+    image,
+    content=[],
+    filename=None,
+):
     return graphics.add_signature(
         image,
         [
@@ -56,10 +64,10 @@ def add_signature(image, content=[], filename=None):
                 + [
                     "{} x {} ".format(
                         string.pretty_duration(
-                            Kanata_plan_video_slice_in_seconds,
+                            KANATA_SLICE,
                             short=True,
                         ),
-                        "{:.1f} fps".format(1 / Kanata_period),
+                        "{:.1f} fps".format(1 / KANATA_PERIOD),
                     ),
                     "MTCNN",
                 ]

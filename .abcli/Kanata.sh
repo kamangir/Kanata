@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
-export Kanata_period=0.1
-export Kanata_output_fps=10
-export Kanata_plan_video_slice_in_seconds=60
+export KANATA_PERIOD=0.1
+export KANATA_FPS=10
+export KANATA_SLICE=60
 export Kanata_validation_video_id="7AKXh0CrNXo"
 
 function Kanata() {
@@ -114,7 +114,7 @@ function abcli_Kanata() {
             video_to_frames \
             $abcli_object_root/$video_object_name/video.mp4 \
             $abcli_object_name \
-            --period $Kanata_period \
+            --period $KANATA_PERIOD \
             --start_time $start_time \
             $extra_args \
             ${@:5}
@@ -149,7 +149,7 @@ function abcli_Kanata() {
 
     if [ "$task" == "render" ] ; then
         local video_length=$(abcli_arg_clarify $2 1)
-        let "frame_count = $Kanata_output_fps * $video_length" 
+        let "frame_count = $KANATA_FPS * $video_length" 
 
         local options=$(abcli_unpack_keyword $3)
         local do_validate=$(abcli_option_int "$options" validate 0)
@@ -174,7 +174,7 @@ function abcli_Kanata() {
             abcli_tag set . Kanata_render_$cw_version
         fi
 
-        abcli_create_video info.jpg info fps=$Kanata_output_fps
+        abcli_create_video info.jpg info fps=$KANATA_FPS
 
         abcli_upload open
         abcli_publish $abcli_object_name info.mp4
@@ -198,12 +198,12 @@ function abcli_Kanata() {
         abcli_youtube download $video_id
 
         local duration=$(abcli_graphics duration_of_video --filename $abcli_object_path/video.mp4)
-        let "last_slice = $duration / $Kanata_plan_video_slice_in_seconds"
+        let "last_slice = $duration / $KANATA_SLICE"
         if [ "$do_validate" == "1" ] ; then
             local last_slice="2"
         fi
-        local frame_count=$(python -c "print(int($Kanata_plan_video_slice_in_seconds/$Kanata_period))")
-        abcli_log "Kanata.slice($video_id:$duration/$Kanata_plan_video_slice_in_seconds): 0..$last_slice - $frame_count frame(s)"
+        local frame_count=$(python -c "print(int($KANATA_SLICE/$KANATA_PERIOD))")
+        abcli_log "Kanata.slice($video_id:$duration/$KANATA_SLICE): 0..$last_slice - $frame_count frame(s)"
 
         local options="$options,frame_count=$frame_count"
 
@@ -212,7 +212,7 @@ function abcli_Kanata() {
         do
             abcli_log "Kanata.slice($video_id:$slice/$last_slice)"
 
-            let "start_time = $slice * $Kanata_plan_video_slice_in_seconds"
+            let "start_time = $slice * $KANATA_SLICE"
             abcli_work Kanata_slice_$cw_version "abcli_Kanata extract_faces $video_id $start_time $options"
         done
 
@@ -237,7 +237,7 @@ function abcli_Kanata() {
         abcli_select
         abcli_face_finder \
             track $object_name \
-            --period $Kanata_period \
+            --period $KANATA_PERIOD \
             --visualize $do_validate \
             --crop 1
 

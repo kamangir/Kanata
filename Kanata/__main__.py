@@ -79,19 +79,17 @@ if args.task == "get_version":
     print(version)
 elif args.task == "render":
     success = render(
-        {
-            "cols": args.cols,
-            "density": args.density,
-            "frame_count": args.frame_count,
-            "image_height": args.image_height,
-            "image_width": args.image_width,
-            "max_asset_count": args.max_asset_count,
-            "min_frame_count": args.min_frame_count,
-            "occupancy": args.occupancy,
-            "rows": args.rows,
-            "skew": args.skew,
-            "smooth": args.smooth,
-        }
+        cols=args.cols,
+        density=args.density,
+        frame_count=args.frame_count,
+        image_height=args.image_height,
+        image_width=args.image_width,
+        max_asset_count=args.max_asset_count,
+        min_frame_count=args.min_frame_count,
+        occupancy=args.occupancy,
+        rows=args.rows,
+        skew=args.skew,
+        smooth=args.smooth,
     )
 elif args.task == "status":
     print("version: {version}")

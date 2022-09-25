@@ -1,8 +1,5 @@
 import os
 
-version = "v14"
-Kanata_period = float(os.getenv("Kanata_period", "0.1"))
-Kanata_output_fps = int(os.getenv("Kanata_output_fps", "10"))
-Kanata_plan_video_slice_in_seconds = int(
-    os.getenv("Kanata_plan_video_slice_in_seconds", "60")
-)
+KANATA_PERIOD = float(os.getenv("KANATA_PERIOD", "0.1"))
+KANATA_FPS = int(os.getenv("KANATA_FPS", "10"))
+KANATA_SLICE = int(os.getenv("KANATA_SLICE", "60"))

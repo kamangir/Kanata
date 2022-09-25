@@ -322,12 +322,13 @@ class Video(object):
 
             file.save_image(
                 os.path.join(
-                    objects.abcli_object_folder, "Data", str(frame), "info.jpg"
+                    os.getenv("abcli_object_path", ""),
+                    "info.jpg",
                 ),
                 add_signature(
                     image,
                     [
-                        string.pretty_duration(self.frame_count / Kanata_output_fps),
+                        string.pretty_duration(self.frame_count / KANATA_FPS),
                         "{} object(s)".format(self.object_count),
                         "{}x{} x {}x{}".format(
                             self.rows, self.cols, face_height, face_width
