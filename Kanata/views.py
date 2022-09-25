@@ -42,37 +42,6 @@ def view_Kanata(request):
     )
 
 
-def view_live(request):
-    from Kanata import live
-
-    return render(
-        request,
-        "item.html",
-        {
-            "abcli_fullname": fullname(),
-            "autorefresh": 300,
-            "description": add_urls(
-                {
-                    "version": live.version,
-                    '<a href="/tag/live_eye">live_eye</a>': jobs.flow(
-                        "live_eye",
-                        "live_worker_{}".format(live.version),
-                    ),
-                    # '<a href="/tag/live_slice_{},work">slice</a>'.format(
-                    #    live.version
-                    # ): jobs.flow("live_slice_{},work".format(live.version)),
-                    # "faces": jobs.state(
-                    #    "live_slice_{},face_finder,track".format(live.version)
-                    # ),
-                    # "videos": jobs.state("live_render_{},video".format(live.version)),
-                    "last update": string.pretty_date(),
-                }
-            ),
-            "title_postfix": "live",
-        },
-    )
-
-
 def view_youtube_video_id(object, page, item_per_page):
     return (
         {

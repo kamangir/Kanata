@@ -5,7 +5,7 @@ from abcli.modules import objects
 from abcli.modules import host
 from abcli.plugins import graphics
 from abcli.plugins.storage import instance as storage
-from . import version, NAME
+from . import NAME
 from .consts import *
 from .video import Video
 import abcli.logging
@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def render(
+    job_id,
     frame_count=120,
     cols=12,
     rows=6,
@@ -45,6 +46,7 @@ def render(
 
 def add_signature(
     image,
+    job_id,
     content=[],
     filename=None,
 ):
@@ -57,7 +59,7 @@ def add_signature(
         [
             " | ".join(
                 [
-                    f"Kanata ({version})",
+                    f"Kanata ({job_id})",
                     string.pretty_shape_of_matrix(image),
                 ]
                 + content

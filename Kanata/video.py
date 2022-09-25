@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 class Video(object):
     def __init__(
         self,
+        job_id,
         cols,
         rows,
         frame_count,
@@ -31,8 +32,9 @@ class Video(object):
         skew=0.0,
         smooth=0,
     ):
-        logger.info(f"{NAME}.Video: {frame_count}x{rows}x{cols}")
+        logger.info(f"{NAME}.Video({job_id}): {frame_count}x{rows}x{cols}")
 
+        self.job_id = job_id
         self.density = density
         self.log = log
         self.max_object_count = max_object_count
@@ -86,7 +88,7 @@ class Video(object):
             object = tags.search(
                 [
                     "~used_for_{}".format(objects.abcli_object_name),
-                    "Kanata_slice_{}".format(version),
+                    "Kanata_slice_{}".format(job_id),
                     "face_finder",
                     "track",
                 ],

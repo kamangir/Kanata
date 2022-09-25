@@ -13,7 +13,7 @@ parser.add_argument(
     "task",
     type=str,
     default="",
-    help="get_version|render|status",
+    help="render|status",
 )
 parser.add_argument(
     "--cols",
@@ -39,6 +39,11 @@ parser.add_argument(
     "--image_width",
     type=int,
     default=2560,
+)
+parser.add_argument(
+    "--job_id",
+    type=str,
+    default="Kanata",
 )
 parser.add_argument(
     "--max_asset_count",
@@ -74,11 +79,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 success = False
-if args.task == "get_version":
-    success = True
-    print(version)
-elif args.task == "render":
+if args.task == "render":
     success = render(
+        job_id=args.job_id,
         cols=args.cols,
         density=args.density,
         frame_count=args.frame_count,
@@ -92,20 +95,30 @@ elif args.task == "render":
         smooth=args.smooth,
     )
 elif args.task == "status":
-    print("version: {version}")
     print(
         "video_id: {}".format(
-            jobs.flow("Kanata_video_id_{}".format(version), "Kanata_worker", "~html")
+            jobs.flow(
+                "Kanata_video_id_{}".format(args.job_id),
+                "Kanata_worker",
+                html=False,
+            )
         )
     )
     print(
         "slice: {}".format(
-            jobs.flow("Kanata_slice_{},work".format(version), "", "~html")
+            jobs.flow(
+                "Kanata_slice_{},work".format(args.job_id),
+                "",
+                html=False,
+            )
         )
     )
     print(
         "faces: {}".format(
-            jobs.state("Kanata_slice_{},face_finder,track".format(version), "~html")
+            jobs.state(
+                "Kanata_slice_{},face_finder,track".format(args.job_id),
+                html=False,
+            )
         )
     )
 
