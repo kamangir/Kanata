@@ -27,7 +27,6 @@ def find(
     sign=True,
     visualize=False,
 ):
-
     from mtcnn import MTCNN
 
     logger.info(
@@ -69,13 +68,7 @@ def find(
         info = {"elapsed_time": elapsed_time, "faces": list_of_faces}
 
         file.save_json(
-            file.set_extension(
-                file.add_postfix(
-                    filename_,
-                    "face_finder",
-                ),
-                "json",
-            ),
+            file.set_extension(file.add_postfix(filename_, "faces"), "json"),
             info,
         )
         output += [info]
@@ -105,7 +98,7 @@ def find(
                 )
 
             file.save_image(
-                os.path.join(file.path(filename_), "info.jpg"),
+                os.path.join(file.add_postfix(filename_, "faces")),
                 image,
             )
 
