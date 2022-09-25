@@ -13,8 +13,6 @@ function abcli_Kanata() {
     local task=$(abcli_unpack_keyword $1 help)
 
     if [ "$task" == "help" ] ; then
-        abcli_show_usage "Kanata config <keyword> <value>" \
-            "config Kanata: <keyword>=<value>."
         abcli_show_usage "Kanata extract_faces [<video_id>] [<start_time>] [validate,frame_count=<n>]" \
             "[vaidate] extract faces  [from <video_id>]."
         abcli_show_usage "Kanata ingest        [<video_id>] [<start_time>] [validate]" \
@@ -33,14 +31,6 @@ function abcli_Kanata() {
         if [ "$(abcli_keyword_is $2 verbose)" == true ] ; then
             python3 -m Kanata --help
         fi
-        return
-    fi
-
-    if [ "$task" == "config" ] ; then
-        local keyword=$2
-        local value=$3
-
-        abcli_cache write Kanata.$keyword "$value"
         return
     fi
 
