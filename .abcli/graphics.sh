@@ -15,9 +15,14 @@ function abcli_graphics_video_to_frames()
         return
     fi
 
+    local filename=$1
+    local destination=$(abcli_clarify_object $2 .)
+
+    abcli_log "$filename -video-to-frames-> $destination"
+
     python3 -m Kanata.graphics \
         video_to_frames \
-        --filename "$1" \
-        --destination $abcli_object_root/$(abcli_clarify_object $2 .) \
+        --filename "$filename" \
+        --destination $abcli_object_root/$destination \
         ${@:3}
 }

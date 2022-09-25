@@ -63,16 +63,10 @@ args = parser.parse_args()
 
 success = False
 if args.task == "find":
-    if args.kind not in "object,filename".split(","):
-        logger.error(f"-{NAME}: find: {args.kind}: kind not found.")
-        success = False
-    else:
-        success, _ = find(
-            args.source,
-            in_object=args.kind == "object",
-            filename=args.filename,
-            visualize=args.visualize,
-        )
+    success, _ = find(
+        args.source,
+        visualize=args.visualize,
+    )
 elif args.task == "track":
     success = track(
         args.source,

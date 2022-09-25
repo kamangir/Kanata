@@ -37,14 +37,22 @@ function abcli_youtube() {
     if [ "$(abcli_list_in $task cat,download,duration,is_CC)" == "True" ] ; then
         local video_id=$2
 
+        abcli_log "youtube.$task: $video_id"
+
         python3 -m Kanata.youtube \
             $task \
             --video_id "$video_id" \
             ${@:3}
 
         if [ "$task" == "download" ] ; then
-            abcli_tag set $abcli_object_name youtube_download
-            abcli_relation set $video_id $abcli_object_name is-downloaded-in
+            abcli_tag set \
+                $abcli_object_name \
+                youtube_download
+
+            abcli_relation set \
+                $video_id \
+                $abcli_object_name \
+                is-downloaded-in
         fi
 
         return
