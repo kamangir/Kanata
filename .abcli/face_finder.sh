@@ -21,8 +21,7 @@ function abcli_face_finder() {
 
     if [ "$task" == "find" ] ; then
         local source=$(abcli_clarify_object $3 .)
-
-        local frame=$(abcli_clarify_input $4)
+        local filename=$(abcli_clarify_input $4)
 
         local kind=$2
         if [ "$kind" == "object" ] ; then
@@ -33,7 +32,7 @@ function abcli_face_finder() {
             find \
             --kind "$kind" \
             --source "$source" \
-            --frame "$frame" \
+            --filename "$filename" \
             ${@:5}
 
         return

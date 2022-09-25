@@ -29,7 +29,7 @@ parser.add_argument(
     default="",
 )
 parser.add_argument(
-    "--frame",
+    "--filename",
     type=str,
     default="",
 )
