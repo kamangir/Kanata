@@ -210,7 +210,8 @@ function abcli_Kanata() {
             abcli_log "Kanata.slice($video_id:$slice/$last_slice)"
 
             let "start_time = $slice * $KANATA_SLICE"
-            abcli_work Kanata_slice_$cw_version "abcli_Kanata extract_faces $video_id $start_time $options"
+            abcli_work Kanata_slice_$cw_version \
+                "abcli_Kanata extract_faces $video_id $start_time $options"
         done
 
         return
