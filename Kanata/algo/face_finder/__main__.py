@@ -76,7 +76,7 @@ if args.task == "find":
         success, _ = find(
             args.source,
             in_object=args.kind == "object",
-            frame=args.frame,
+            filename=args.filename,
             visualize=args.visualize,
         )
 elif args.task == "track":
