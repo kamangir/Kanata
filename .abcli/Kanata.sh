@@ -17,8 +17,6 @@ function abcli_Kanata() {
             "config Kanata: <keyword>=<value>."
         abcli_show_usage "Kanata extract_faces [<video_id>] [<start_time>] [validate,frame_count=<n>]" \
             "[vaidate] extract faces  [from <video_id>]."
-        abcli_show_usage "Kanata find_faces    [<object_name>]             [validate]" \
-            "[validate] find faces   [in <object_name>]."
         abcli_show_usage "Kanata ingest        [<video_id>] [<start_time>] [validate]" \
             "[validate] ingest        [<video_id>]."
         abcli_show_usage "Kanata register       <video_id_1,video_id_2>" \
@@ -63,7 +61,14 @@ function abcli_Kanata() {
         local frame_count=$(abcli_option_int "$options" frame_count $frame_count)
 
         abcli_Kanata ingest $video_id $start_time $options --frame_count $frame_count
-        abcli_Kanata find_faces $abcli_object_name
+
+        abcli_face_finder \
+            find \
+            object $abcli_object_name - \
+            --visualize $do_validate
+
+        return 
+
         abcli_Kanata track_faces $abcli_object_name
 
         abcli_cache write $abcli_object_name.video_id $video_id
@@ -73,22 +78,6 @@ function abcli_Kanata() {
             abcli_upload open
             abcli_message stream $abcli_object_name
         fi
-
-        return
-    fi
-
-    if [ "$task" == "find_faces" ] ; then
-        local object_name=$2
-        local options=$3
-
-        local do_validate=$(abcli_option_int "$options" validate 0)
-
-        abcli_select $object_name
-        abcli_download
-        abcli_face_finder \
-            find \
-            object $object - \
-            --visualize $do_validate
 
         return
     fi

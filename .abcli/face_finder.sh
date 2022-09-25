@@ -26,6 +26,7 @@ function abcli_face_finder() {
         local kind=$2
         if [ "$kind" == "object" ] ; then
             abcli_tag set $source face_finder,find,info
+            abcli_download object $source
         fi
 
         abcli_log "face_finder: $kind:$source:$filename"
