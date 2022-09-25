@@ -60,7 +60,12 @@ function abcli_Kanata() {
         fi
         local frame_count=$(abcli_option_int "$options" frame_count $frame_count)
 
-        abcli_Kanata ingest $video_id $start_time $options --frame_count $frame_count
+        abcli_Kanata \
+            ingest \
+            $video_id \
+            $start_time \
+            $options \
+            --frame_count $frame_count
 
         abcli_face_finder \
             find \

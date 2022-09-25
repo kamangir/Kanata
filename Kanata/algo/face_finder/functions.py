@@ -69,7 +69,13 @@ def find(
         info = {"elapsed_time": elapsed_time, "faces": list_of_faces}
 
         file.save_json(
-            os.path.join(file.path(filename_), "face_finder.json"),
+            file.set_extension(
+                file.add_postfix(
+                    filename_,
+                    "face_finder",
+                ),
+                "json",
+            ),
             info,
         )
         output += [info]
