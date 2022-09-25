@@ -98,7 +98,7 @@ elif args.task == "status":
     print(
         "video_id: {}".format(
             jobs.flow(
-                "Kanata_video_id_{}".format(args.job_id),
+                f"Kanata_video_id_{args.job_id}",
                 "Kanata_worker",
                 html=False,
             )
@@ -107,7 +107,7 @@ elif args.task == "status":
     print(
         "slice: {}".format(
             jobs.flow(
-                "Kanata_slice_{},work".format(args.job_id),
+                f"Kanata_slice_{args.job_id},work",
                 "",
                 html=False,
             )
@@ -116,7 +116,7 @@ elif args.task == "status":
     print(
         "faces: {}".format(
             jobs.state(
-                "Kanata_slice_{},face,track".format(args.job_id),
+                f"Kanata_slice_{args.job_id},faces,track",
                 html=False,
             )
         )

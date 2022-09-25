@@ -197,7 +197,7 @@ def track(
             background = background + image.astype(np.float32)
 
         success_, info = file.load_json(
-            os.path.join(abcli_object_root, source, "Data", frame, "face.json")
+            os.path.join(abcli_object_root, source, frame, "faces.json")
         )
         if not success_:
             error_frames += [frame]

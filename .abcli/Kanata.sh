@@ -65,12 +65,12 @@ function abcli_Kanata() {
             $options \
             --frame_count $frame_count
 
-        abcli_face \
+        abcli_faces \
             find \
             $abcli_object_name \
             --visualize $do_validate
 
-        abcli_face \
+        abcli_faces \
             track \
             $abcli_object_name \
             --visualize $do_validate

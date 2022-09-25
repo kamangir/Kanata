@@ -85,8 +85,8 @@ class Video(object):
             object = tags.search(
                 [
                     f"~used_for_{objects.abcli_object_name}",
-                    f"Kanata_slice_{job_id}",
-                    "face",
+                    f"Kanata_slice_{self.job_id}",
+                    "faces",
                     "track",
                 ],
                 "count=1",
@@ -99,7 +99,7 @@ class Video(object):
 
             if not storage.download_file(
                 storage.bucket_name,
-                f"abcli/{object}/face.json",
+                f"abcli/{object}/faces.json",
                 "object",
                 civilized=True,
             ):
@@ -109,7 +109,7 @@ class Video(object):
             tags.set_(object, "used_for_{}".format(objects.abcli_object_name))
 
             success, info = file.load_json(
-                os.path.join(objects.abcli_object_root_folder, object, "0/face.json")
+                os.path.join(objects.abcli_object_root_folder, object, "0/faces.json")
             )
             if not success:
                 continue

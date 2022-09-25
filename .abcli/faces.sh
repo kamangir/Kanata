@@ -1,18 +1,18 @@
 #! /usr/bin/env bash
 
-function abcli_face() {
+function abcli_faces() {
     local task=$(abcli_unpack_keyword $1 help)
 
     if [ "$task" == "help" ] ; then
-        abcli_show_usage "abcli face find  <object-name>" \
+        abcli_show_usage "abcli faces find  <object-name>" \
             "find faces in <object-name>."
-        abcli_show_usage "abcli face install" \
-            "install face."
-        abcli_show_usage "abcli face track <object-name>" \
+        abcli_show_usage "abcli faces install" \
+            "install faces."
+        abcli_show_usage "abcli faces track <object-name>" \
             "track faces in <object-name>."
 
         if [ "$(abcli_keyword_is $2 verbose)" == true ] ; then
-            python3 -m Kanata.algo.face --help
+            python3 -m Kanata.algo.faces --help
         fi
         return
     fi
@@ -22,13 +22,13 @@ function abcli_face() {
 
         abcli_tag set \
             $object_name \
-            face,find
+            faces,find
 
         abcli_download object $object_name
 
         abcli_log "finding faces in $object_name"
 
-        python3 -m Kanata.algo.face \
+        python3 -m Kanata.algo.faces \
             find \
             --source $abcli_object_root/$object_name \
             ${@:3}
@@ -54,7 +54,7 @@ function abcli_face() {
 
         abcli_log "tracking faces in $object_name"
 
-        python3 -m Kanata.algo.face \
+        python3 -m Kanata.algo.faces \
             track \
             --source $object_name \
             --destination $abcli_object_name \
@@ -62,10 +62,10 @@ function abcli_face() {
 
         abcli_tag set \
             $abcli_object_name\
-            face,track
+            faces,track
 
         return
     fi
 
-    abcli_log_error "-abcli: face: $task: command not found."
+    abcli_log_error "-abcli: faces: $task: command not found."
 }
