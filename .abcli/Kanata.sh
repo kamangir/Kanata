@@ -27,8 +27,6 @@ function abcli_Kanata() {
             "[validate] slice         [<video_id>]."
         abcli_show_usage "Kanata status" \
             "show status of Kanata."
-        abcli_show_usage "Kanata track_faces <object_name> [validate]" \
-            "track faces in <object_name> [for validation]."
         abcli_show_usage "Kanata validate" \
             "validate Kanata."
 
@@ -67,14 +65,17 @@ function abcli_Kanata() {
             $options \
             --frame_count $frame_count
 
-        abcli_face_finder \
+        abcli_face \
             find \
-            object $abcli_object_name - \
+            $abcli_object_name \
+            --visualize $do_validate
+
+        abcli_face \
+            track \
+            $abcli_object_name \
             --visualize $do_validate
 
         return 
-
-        abcli_Kanata track_faces $abcli_object_name
 
         abcli_cache write $abcli_object_name.video_id $video_id
         abcli_cache write $abcli_object_name.start_time $start_time
@@ -217,24 +218,6 @@ function abcli_Kanata() {
         python3 -m Kanata \
             status \
             ${@:2}
-        return
-    fi
-
-    if [ "$task" == "track_faces" ] ; then
-        local object_name=$2
-
-        local options="$3"
-        local do_validate=$(abcli_option_int "$options" validate 0)
-
-        abcli_download object $object_name
-
-        abcli_select
-        abcli_face_finder \
-            track $object_name \
-            --period $KANATA_PERIOD \
-            --visualize $do_validate \
-            --crop 1
-
         return
     fi
 

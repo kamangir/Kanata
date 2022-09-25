@@ -116,7 +116,7 @@ elif args.task == "status":
     print(
         "faces: {}".format(
             jobs.state(
-                "Kanata_slice_{},face_finder,track".format(args.job_id),
+                "Kanata_slice_{},face,track".format(args.job_id),
                 html=False,
             )
         )

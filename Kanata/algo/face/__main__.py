@@ -34,12 +34,6 @@ parser.add_argument(
     default="",
 )
 parser.add_argument(
-    "--kind",
-    type=str,
-    default="",
-    help="image|object",
-)
-parser.add_argument(
     "--missing_frames",
     type=int,
     default=2,

@@ -29,7 +29,7 @@ def view_Kanata(request):
                         Kanata.version
                     ): jobs.flow("Kanata_slice_{},work".format(Kanata.version)),
                     "faces": jobs.state(
-                        "Kanata_slice_{},face_finder,track".format(Kanata.version)
+                        "Kanata_slice_{},face,track".format(Kanata.version)
                     ),
                     "videos": jobs.state(
                         "Kanata_render_{},video".format(Kanata.version)

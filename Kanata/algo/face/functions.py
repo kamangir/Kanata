@@ -22,42 +22,26 @@ abcli_object_root = os.getenv("abcli_object_root", "")
 
 def find(
     source,
-    in_object=False,
-    filename="",
     sign=True,
     visualize=False,
 ):
     from mtcnn import MTCNN
 
-    logger.info(
-        "{}.find({}{})".format(
-            NAME,
-            source,
-            "/{}".format(filename if str(filename) else ""),
-        )
-    )
+    logger.info(f"{NAME}.find({source})")
 
-    list_of_images = (
-        [
-            filename_
-            for filename_ in file.list_of(
-                os.path.join(abcli_object_root, source, "*.jpg")
-            )
-            if file.name(filename_) == filename or not filename
-        ]
-        if in_object
-        else [source]
-    )
+    list_of_images = [
+        filename for filename in file.list_of(os.path.join(source, "*.jpg"))
+    ]
 
     logger.info(f"{NAME}.find: {len(list_of_images)} image(s)")
 
     detector = MTCNN()
     error_images = []
     output = []
-    for filename_ in tqdm(list_of_images):
-        success_, image = file.load_image(filename_)
+    for filename in tqdm(list_of_images):
+        success_, image = file.load_image(filename)
         if not success_:
-            error_images += [filename_]
+            error_images += [filename]
             output += [{}]
             continue
 
@@ -68,12 +52,12 @@ def find(
         info = {"elapsed_time": elapsed_time, "faces": list_of_faces}
 
         file.save_json(
-            file.set_extension(file.add_postfix(filename_, "faces"), "json"),
+            file.set_extension(file.add_postfix(filename, "faces"), "json"),
             info,
         )
         output += [info]
 
-        logger.info(f"{NAME} found {len(list_of_faces)} face(s) in {filename_}.")
+        logger.info(f"{NAME} found {len(list_of_faces)} face(s) in {filename}.")
 
         if visualize:
             image = image.copy()
@@ -94,11 +78,11 @@ def find(
                             )
                         ),
                     ],
-                    filename=path.name(file.path(filename_)),
+                    filename=path.name(file.path(filename)),
                 )
 
             file.save_image(
-                os.path.join(file.add_postfix(filename_, "faces")),
+                os.path.join(file.add_postfix(filename, "faces")),
                 image,
             )
 
@@ -213,7 +197,7 @@ def track(
             background = background + image.astype(np.float32)
 
         success_, info = file.load_json(
-            os.path.join(abcli_object_root, source, "Data", frame, "face_finder.json")
+            os.path.join(abcli_object_root, source, "Data", frame, "face.json")
         )
         if not success_:
             error_frames += [frame]
@@ -273,12 +257,10 @@ def track(
 
         face_id_values = ["#{}".format(face["id"]) for face in info["faces"]]
         logger.error(
-            "face_finder.track(frame #{}): {}".format(frame, ",".join(face_id_values))
+            "{}.track(frame #{}): {}".format(NAME, frame, ",".join(face_id_values))
         )
         if len(set(face_id_values)) != len(face_id_values):
-            logger.error(
-                "face_finder.track(frame #{}): duplicate id found.".format(frame)
-            )
+            logger.error(f"{NAME}.track(frame #{frame}): duplicate id found.")
             return False
 
         elapsed_time += info["elapsed_time"]
@@ -292,8 +274,8 @@ def track(
 
     if error_frames:
         logger.info(
-            "face_finder.track({}): {} error(s): {}".format(
-                source, len(error_frames), ",".join(error_frames)
+            ".track({}): {} error(s): {}".format(
+                NAME, source, len(error_frames), ",".join(error_frames)
             )
         )
 
@@ -350,8 +332,8 @@ def track(
                 add_signature(
                     graphics.combine_images(
                         [
-                            filename_
-                            for filename_ in file.list_of(
+                            filename
+                            for filename in file.list_of(
                                 os.path.join(
                                     objects.path_of(destination),
                                     "Data",
@@ -359,7 +341,7 @@ def track(
                                     "*.jpg",
                                 )
                             )
-                            if file.name(filename_).startswith("face_")
+                            if file.name(filename).startswith("face_")
                         ]
                     ),
                     [

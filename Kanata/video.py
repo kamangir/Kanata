@@ -84,9 +84,9 @@ class Video(object):
 
             object = tags.search(
                 [
-                    "~used_for_{}".format(objects.abcli_object_name),
-                    "Kanata_slice_{}".format(job_id),
-                    "face_finder",
+                    f"~used_for_{objects.abcli_object_name}",
+                    f"Kanata_slice_{job_id}",
+                    "face",
                     "track",
                 ],
                 "count=1",
@@ -99,9 +99,9 @@ class Video(object):
 
             if not storage.download_file(
                 storage.bucket_name,
-                "abcli/{}/Data/0/face_finder.json".format(object),
+                f"abcli/{object}/face.json",
                 "object",
-                "~errordump",
+                civilized=True,
             ):
                 continue
 
@@ -109,9 +109,7 @@ class Video(object):
             tags.set_(object, "used_for_{}".format(objects.abcli_object_name))
 
             success, info = file.load_json(
-                os.path.join(
-                    objects.abcli_object_root_folder, object, "Data/0/face_finder.json"
-                )
+                os.path.join(objects.abcli_object_root_folder, object, "0/face.json")
             )
             if not success:
                 continue
@@ -270,18 +268,19 @@ class Video(object):
 
                         if not storage.download_file(
                             storage.bucket_name,
-                            "abcli/{}/Data/{}/face_{:05d}.jpg".format(
+                            "abcli/{}/{}/face_{:05d}.jpg".format(
                                 object, int(face_id) + 1, index
                             ),
                             "object",
-                            "~errordump,~log",
+                            civilized=True,
+                            log=False,
                         ):
                             continue
 
                         success_, image_ = file.load_image(
                             os.path.join(
                                 objects.abcli_object_root_folder,
-                                "{}/Data/{}/face_{:05d}.jpg".format(
+                                "{}/{}/face_{:05d}.jpg".format(
                                     object, int(face_id) + 1, index
                                 ),
                             )

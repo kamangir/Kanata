@@ -2,7 +2,7 @@
 
 function abcli_install_Kanata() {
     abcli_youtube install
-    abcli_face_finder install
+    abcli_face install
 }
 
 if [ "$abcli_is_mac" == true ] || [ "$ec" == true ] ; then
