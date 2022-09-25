@@ -28,6 +28,8 @@ function abcli_face_finder() {
             abcli_tag set $source face_finder,find,info
         fi
 
+        abcli_log "face_finder: $kind:$source:$filename"
+
         python3 -m Kanata.algo.face_finder \
             find \
             --kind "$kind" \
