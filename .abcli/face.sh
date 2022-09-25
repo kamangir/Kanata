@@ -26,7 +26,7 @@ function abcli_face() {
 
         abcli_download object $object_name
 
-        abcli_log "face: find: $object_name"
+        abcli_log "finding faces in $object_name"
 
         python3 -m Kanata.algo.face \
             find \
@@ -44,12 +44,15 @@ function abcli_face() {
 
     if [ "$task" == "track" ] ; then
         local object_name=$(abcli_clarify_object $2 .)
-        if [ "$object_name" == ".." ] ; then
-            local object_name=$abcli_object_name_prev
-        fi
+
         abcli_download object $object_name
 
-        abcli_relation set $object_name $abcli_object_name produced
+        abcli_relation set \
+            $object_name \
+            $abcli_object_name \
+            produced
+
+        abcli_log "tracking faces in $object_name"
 
         python3 -m Kanata.algo.face \
             track \
@@ -57,7 +60,9 @@ function abcli_face() {
             --destination $abcli_object_name \
             ${@:3}
 
-        abcli_tag set . face,track
+        abcli_tag set \
+            $abcli_object_name\
+            face,track
 
         return
     fi

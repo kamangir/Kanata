@@ -166,7 +166,9 @@ function abcli_Kanata() {
 
         if [ "$do_validate" == "0" ] ; then
             local cw_version=$(abcli_Kanata_version)
-            abcli_tag set . Kanata_render_$cw_version
+            abcli_tag set \
+                $abcli_object_name \
+                Kanata_render_$cw_version
         fi
 
         abcli_create_video info.jpg info fps=$KANATA_FPS
