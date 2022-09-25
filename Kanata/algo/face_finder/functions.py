@@ -95,7 +95,7 @@ def find(
                             )
                         ),
                     ],
-                    filename: path.name(file.path(filename_)),
+                    filename=path.name(file.path(filename_)),
                 )
 
             file.save_image(
