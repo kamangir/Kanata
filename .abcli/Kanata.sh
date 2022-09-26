@@ -161,10 +161,15 @@ function abcli_Kanata() {
                 Kanata_render_$cw_version
         fi
 
-        abcli_create_video info.jpg info fps=$KANATA_FPS
+        abcli_create_video \
+            info.jpg \
+            info \
+            fps=$KANATA_FPS
 
         abcli_upload open
-        abcli_publish $abcli_object_name info.mp4
+        abcli_publish \
+            $abcli_object_name \
+            info.mp4
 
         return
     fi
