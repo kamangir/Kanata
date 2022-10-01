@@ -73,7 +73,7 @@ function abcli_create_video() {
         update \
         --is_json 1 \
         --keyword video \
-        --content '{"fps":"$fps", "size":"$size"}' \
+        --content "\{"fps":"$fps", "size":"$size"\}" \
         --object_path $abcli_object_path
 
     rm -rf $abcli_object_path/temp_video
