@@ -1,4 +1,5 @@
 import argparse
+import base64
 import json
 from . import *
 import abcli.logging
@@ -19,10 +20,14 @@ parser.add_argument(
     type=str,
 )
 parser.add_argument(
-    "--is_json",
+    "--is_base64_encoded",
     type=int,
     default=0,
     help="0|1",
+)
+parser.add_argument(
+    "--keyword",
+    type=str,
 )
 parser.add_argument(
     "--object_path",
@@ -32,12 +37,12 @@ args = parser.parse_args()
 
 success = False
 if args.task == "update":
-    if args.is_json:
-        success = update_metadata(
-            args.keyword,
-            json.loads(args.content) if args.is_json else args.content,
-            args.object_path,
-        )
+    success = update_metadata(
+        args.keyword,
+        args.content,
+        args.object_path,
+        is_base64_encoded=args.is_base64_encoded,
+    )
 else:
     logger.error(f"-{NAME}: {args.task}: command not found.")
 

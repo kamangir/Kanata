@@ -71,9 +71,13 @@ function abcli_create_video() {
 
     python3 -m Kanata.metadata \
         update \
-        --is_json 1 \
-        --keyword video \
-        --content "\{"fps":"$fps", "size":"$size"\}" \
+        --keyword fps \
+        --content $fps \
+        --object_path $abcli_object_path
+    python3 -m Kanata.metadata \
+        update \
+        --keyword size \
+        --content $size \
         --object_path $abcli_object_path
 
     rm -rf $abcli_object_path/temp_video
