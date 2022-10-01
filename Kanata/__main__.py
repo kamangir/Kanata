@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-parser = argparse.ArgumentParser(NAME, description=f"{NAME}-{VERSION:.2f}")
+parser = argparse.ArgumentParser(NAME, description=f"{NAME}-{VERSION}")
 parser.add_argument(
     "task",
     type=str,
