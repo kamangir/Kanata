@@ -1,5 +1,5 @@
 NAME = "Kanata"
 
-VERSION = "2.149.1"
+VERSION = "2.150.1"
 
 from .utils import *
