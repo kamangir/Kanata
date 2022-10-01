@@ -2,12 +2,11 @@ import copy
 import os
 import os.path
 from abcli import file
+from . import NAME
 from abcli import logging
 import logging
 
 logger = logging.getLogger(__name__)
-
-NAME = "Kanata.metadata"
 
 
 def update_metadata(
