@@ -13,20 +13,20 @@ function abcli_Kanata() {
     local task=$(abcli_unpack_keyword $1 help)
 
     if [ "$task" == "help" ] ; then
-        abcli_show_usage "Kanata extract_faces [<video_id>] [<start_time>] [validate,frame_count=<n>]" \
-            "[vaidate] extract faces  [from <video_id>]."
-        abcli_show_usage "Kanata ingest        [<video_id>] [<start_time>] [validate]" \
-            "[validate] ingest        [<video_id>]."
-        abcli_show_usage "Kanata register       <video_id_1,video_id_2>" \
-            "register                 <video_id_1,video_id_2>."
+        abcli_show_usage "Kanata extract_faces$ABCUL<video_id>$ABCUL[frame_count=<n>,start_time=<0.0>]" \
+            "extract faces from <video_id>."
+        abcli_show_usage "Kanata ingest        <video_id> [<start_time>]" \
+            "ingest             <video_id>."
+        abcli_show_usage "Kanata register <video_id_1,video_id_2>" \
+            "register <video_id_1,video_id_2>."
         abcli_show_usage "Kanata render [<video_length>] [validate]" \
             "[validate] render a video."
         abcli_show_usage "Kanata slice [<video_id>] [validate]" \
             "[validate] slice         [<video_id>]."
         abcli_show_usage "Kanata status" \
             "show status of Kanata."
-        abcli_show_usage "Kanata validate" \
-            "validate Kanata."
+
+        abcli_Kanata_validate $@
 
         if [ "$(abcli_keyword_is $2 verbose)" == true ] ; then
             python3 -m Kanata --help
@@ -34,19 +34,19 @@ function abcli_Kanata() {
         return
     fi
 
+    local function="abcli_Kanata_$task"
+    if [[ $(type -t $function) == "function" ]] ; then
+        $function "${@:2}"
+        return
+    fi
+
     if [ "$task" == "extract_faces" ] ; then
         local video_id=$2
 
-        local start_time=$(abcli_clarify_input $3 0.0)
-
-        local options="$4"
+        local options=$3
         local do_stream=$(abcli_option_int "$options" stream 1)
-        local do_validate=$(abcli_option_int "$options" validate 0)
-        local frame_count=-1
-        if [ "$do_validate" == "1" ] ; then
-            local frame_count="25"
-        fi
-        local frame_count=$(abcli_option_int "$options" frame_count $frame_count)
+        local frame_count=$(abcli_option_int "$options" frame_count -1)
+        local start_time=$(abcli_option $options start_time 0.0)
 
         abcli_Kanata \
             ingest \
@@ -64,9 +64,7 @@ function abcli_Kanata() {
             track \
             $abcli_object_name \
             --visualize $do_validate
-
-        return 
-
+ 
         abcli_cache write $abcli_object_name.video_id $video_id
         abcli_cache write $abcli_object_name.start_time $start_time
 
@@ -216,11 +214,6 @@ function abcli_Kanata() {
         python3 -m Kanata \
             status \
             ${@:2}
-        return
-    fi
-
-    if [ "$task" == "validate" ] ; then
-        abcli_Kanata extract_faces - - stream,validate
         return
     fi
 
