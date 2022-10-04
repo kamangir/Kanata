@@ -18,7 +18,7 @@ function abcli_Kanata_register() {
         local check=$(abcli_youtube is_CC $video_id)
         if [ "$check" != "True" ] ; then
             abcli_log_error "❗ youtube/$video_id is not licensed under Creative Commons - will not register."
-            return
+            continue
         fi
         abcli_log "✅ youtube/$video_id is licensed under Creative Commons."
 

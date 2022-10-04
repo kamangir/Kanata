@@ -35,7 +35,7 @@ function abcli_Kanata_validate() {
 
     if [ "$task" == "register" ] ; then
         abcli_Kanata_register \
-            7AKXh0CrNXo
+            7AKXh0CrNXo,c35PEJCMG1w
         return
     fi
 
