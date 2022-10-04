@@ -18,14 +18,14 @@ function abcli_Kanata_validate() {
     fi
 
     if [ "$task" == "extract_faces" ] ; then
-        Kanata extract_faces \
+        abcli_Kanata_extract_faces \
             7AKXh0CrNXo \
             frame_count=42,start_time=2.0,visualize
         return
     fi
 
     if [ "$task" == "ingest" ] ; then
-        Kanata_ingest \
+        abcli_Kanata_ingest \
             7AKXh0CrNXo \
             - \
             --frame_count 42 \
@@ -34,7 +34,7 @@ function abcli_Kanata_validate() {
     fi
 
     if [ "$task" == "register" ] ; then
-        Kanata register \
+        abcli_Kanata_register \
             7AKXh0CrNXo
         return
     fi
