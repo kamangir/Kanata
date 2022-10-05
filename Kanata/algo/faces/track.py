@@ -19,12 +19,9 @@ def track(
     visualize=False,
     **kwargs,
 ):
-    import ipdb
-
-    ipdb.set_trace()
     list_of_files = objects.list_of_files(source)
     logger.info(
-        "{}.track({}->{}): {} frame(s) {}".format(
+        "{}.track({}->{}): {} filename(s) {}".format(
             NAME,
             source,
             destination,
@@ -46,13 +43,11 @@ def track(
     background = None
     foreground = None
     error_frames = []
-    for frame in tqdm(list_of_files):
+    for filename in tqdm(list_of_files):
         if visualize:
-            success_, image = file.load_image(
-                os.path.join(abcli_object_root, source, "Data", frame, "camera.jpg")
-            )
+            success_, image = file.load_image(os.path.join(abcli_object_root, filename))
             if not success_:
-                error_frames += [frame]
+                error_frames += [filename]
                 continue
 
         if visualize:
@@ -63,10 +58,17 @@ def track(
             background = background + image.astype(np.float32)
 
         success_, info = file.load_json(
-            os.path.join(abcli_object_root, source, frame, "faces.json")
+            os.path.join(
+                abcli_object_root,
+                source,
+                file.set_extension(
+                    file.add_postfix(filename, "face"),
+                    "json",
+                ),
+            )
         )
         if not success_:
-            error_frames += [frame]
+            error_frames += [filename]
             continue
 
         if visualize:
@@ -76,7 +78,7 @@ def track(
                     y : y + height, x : x + width, :
                 ]
 
-        logger.info("tracking frame #{}: {} face(s)".format(frame, len(info["faces"])))
+        logger.info("tracking {} face(s) in {}".format(len(info["faces"]), filename))
         used_face_ids = []
         for index in range(len(info["faces"])):
             face_id_ = -1
