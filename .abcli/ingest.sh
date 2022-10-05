@@ -12,7 +12,6 @@ function abcli_Kanata_ingest() {
     local video_id=$1
 
     local options=$2
-    local start_time=$(abcli_option $options start_time 0.0)
 
     abcli_select
     abcli_youtube download $video_id
