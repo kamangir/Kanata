@@ -15,20 +15,18 @@ function abcli_Kanata_extract_faces() {
     local do_stream=$(abcli_option_int "$options" stream 1)
     local do_visualize=$(abcli_option_int "$options" visualize 0)
 
-    return
-
     abcli_Kanata \
         ingest \
         $video_id \
         $options \
         ${@:3}
 
-    return
-
     abcli_faces \
         find \
         $abcli_object_name \
         --visualize $do_visualize
+
+    return
 
     abcli_faces \
         track \
