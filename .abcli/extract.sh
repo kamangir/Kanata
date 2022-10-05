@@ -26,10 +26,12 @@ function abcli_Kanata_extract_faces() {
         $abcli_object_name \
         --visualize $do_visualize
 
-    abcli_faces \
+    echo abcli_faces \
         track \
         $abcli_object_name \
         --visualize $do_visualize
+
+    return
 
     abcli_cache write $abcli_object_name.video_id $video_id
 

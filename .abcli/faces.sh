@@ -54,7 +54,7 @@ function abcli_faces() {
 
         abcli_log "tracking faces in $object_name"
 
-        python3 -m Kanata.algo.faces \
+        echo python3 -m Kanata.algo.faces \
             track \
             --source $object_name \
             --destination $abcli_object_name \
