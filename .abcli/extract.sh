@@ -26,8 +26,6 @@ function abcli_Kanata_extract_faces() {
         $abcli_object_name \
         --visualize $do_visualize
 
-    return
-
     abcli_faces \
         track \
         $abcli_object_name \
