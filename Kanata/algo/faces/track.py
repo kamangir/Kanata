@@ -14,7 +14,7 @@ def track(
     source,
     destination,
     crop=False,
-    missing_frames=2,
+    missing_filenames=2,
     period=0.1,
     visualize=False,
     **kwargs,
@@ -38,16 +38,16 @@ def track(
     count = 0
     elapsed_time = 0
     face_count = 0
-    output = {"frames": {}}
+    output = {"filenames": {}}
     face_id = -1
     background = None
     foreground = None
-    error_frames = []
+    error_filenames = []
     for filename in tqdm(list_of_files):
         if visualize:
             success_, image = file.load_image(os.path.join(abcli_object_root, filename))
             if not success_:
-                error_frames += [filename]
+                error_filenames += [filename]
                 continue
 
         if visualize:
@@ -68,7 +68,7 @@ def track(
             )
         )
         if not success_:
-            error_frames += [filename]
+            error_filenames += [filename]
             continue
 
         if visualize:
@@ -83,20 +83,20 @@ def track(
         for index in range(len(info["faces"])):
             face_id_ = -1
             list_of_files_ = [
-                str(frame_)
-                for frame_ in range(int(frame) - missing_frames, int(frame))
-                if str(frame_) in output["frames"]
+                str(filename_)
+                for filename_ in range(int(filename) - missing_filenames, int(filename))
+                if str(filename_) in output["filenames"]
             ]
             logger.debug(
-                "tracking frame #{}/face #{}: {}".format(
-                    frame,
+                "tracking filename #{}/face #{}: {}".format(
+                    filename,
                     index,
-                    ",".join(["#{}".format(frame_) for frame_ in list_of_files_]),
+                    ",".join(["#{}".format(filename_) for filename_ in list_of_files_]),
                 )
             )
 
-            for frame_ in list_of_files_:
-                for index_, face_ in enumerate(output["frames"][frame_]["faces"]):
+            for filename_ in list_of_files_:
+                for index_, face_ in enumerate(output["filenames"][filename_]["faces"]):
                     if (
                         match(info["faces"][index], face_, **kwargs)
                         and face_.get("id", -1) not in used_face_ids
@@ -105,8 +105,8 @@ def track(
                         face_id_ = face_["id"]
                         used_face_ids += [face_id_]
                         logger.info(
-                            "frame #{}/face #{} -{}-> frame #{}/face #{}".format(
-                                frame, index, face_id_, frame_, index_
+                            "filename #{}/face #{} -{}-> filename #{}/face #{}".format(
+                                filename, index, face_id_, filename_, index_
                             )
                         )
                         break
@@ -121,14 +121,16 @@ def track(
 
             info["faces"][index]["id"] = face_id_
 
-        output["frames"][frame] = info
+        output["filenames"][filename] = info
 
         face_id_values = ["#{}".format(face["id"]) for face in info["faces"]]
         logger.error(
-            "{}.track(frame #{}): {}".format(NAME, frame, ",".join(face_id_values))
+            "{}.track(filename #{}): {}".format(
+                NAME, filename, ",".join(face_id_values)
+            )
         )
         if len(set(face_id_values)) != len(face_id_values):
-            logger.error(f"{NAME}.track(frame #{frame}): duplicate id found.")
+            logger.error(f"{NAME}.track(filename #{filename}): duplicate id found.")
             return False
 
         elapsed_time += info["elapsed_time"]
@@ -140,10 +142,10 @@ def track(
             background = (background / count).astype(np.uint8)
         elapsed_time = elapsed_time / count
 
-    if error_frames:
+    if error_filenames:
         logger.info(
             ".track({}): {} error(s): {}".format(
-                NAME, source, len(error_frames), ",".join(error_frames)
+                NAME, source, len(error_filenames), ",".join(error_filenames)
             )
         )
 
@@ -153,15 +155,17 @@ def track(
     if (visualize or crop) and face_id >= 0:
         colormap = cm.get_cmap("Blues", face_id + 1)
 
-        for frame in output["frames"]:
+        for filename in output["filenames"]:
             if crop:
                 success_, image = file.load_image(
-                    os.path.join(abcli_object_root, source, "Data", frame, "camera.jpg")
+                    os.path.join(
+                        abcli_object_root, source, "Data", filename, "camera.jpg"
+                    )
                 )
                 if not success_:
                     continue
 
-            for face in output["frames"][frame]["faces"]:
+            for face in output["filenames"][filename]["faces"]:
                 if visualize:
                     foreground = render(
                         foreground,
@@ -182,7 +186,7 @@ def track(
                             destination,
                             "Data",
                             str(face["id"] + 1),
-                            "face_{:05d}.jpg".format(int(frame)),
+                            "face_{:05d}.jpg".format(int(filename)),
                         ),
                         image[y : y + height, x : x + width, :],
                     )
@@ -217,7 +221,7 @@ def track(
                         "{} face(s)".format(face_count),
                         "{} trace(s)".format(output["last_face_id"] + 1),
                         "face_id: {}".format(int(face_id) - 1),
-                        "took {} / frame".format(
+                        "took {} / filename".format(
                             string.pretty_duration(
                                 elapsed_time,
                                 largest=True,
@@ -226,7 +230,7 @@ def track(
                             )
                         ),
                     ],
-                    {"frame": face_id},
+                    {"filename": face_id},
                 ),
             )
 
@@ -239,7 +243,7 @@ def track(
                     "{} file(s)".format(len(list_of_files)),
                     "{} face(s)".format(face_count),
                     "{} trace(s)".format(output["last_face_id"] + 1),
-                    "took {} / frame".format(
+                    "took {} / filename".format(
                         string.pretty_duration(
                             elapsed_time,
                             largest=True,
@@ -258,17 +262,17 @@ def track(
 
     output["traces"] = {}
     for face_id in range(output["last_face_id"] + 1):
-        first_frame = 9999999
-        last_frame = 0
+        first_filename = 9999999
+        last_filename = 0
         x0 = 9999999
         y0 = 9999999
         x1 = 0
         y1 = 0
-        for frame in output["frames"]:
-            for face in output["frames"][frame]["faces"]:
+        for filename in output["filenames"]:
+            for face in output["filenames"][filename]["faces"]:
                 if face["id"] == face_id:
-                    first_frame = min(int(frame), first_frame)
-                    last_frame = max(int(frame), last_frame)
+                    first_filename = min(int(filename), first_filename)
+                    last_filename = max(int(filename), last_filename)
 
                     x, y, width, height = face["box"]
                     x0 = min(x0, x)
@@ -277,12 +281,12 @@ def track(
                     y1 = max(y1, y + height - 1)
 
         output["traces"][face_id] = {
-            "first_frame": first_frame,
-            "start_time": round(first_frame * period, 3),
-            "last_frame": last_frame,
-            "end_time": round(last_frame * period, 3),
-            "frame_count": last_frame - first_frame + 1,
-            "duration": round((last_frame - first_frame + 1) * period, 3),
+            "first_filename": first_filename,
+            "start_time": round(first_filename * period, 3),
+            "last_filename": last_filename,
+            "end_time": round(last_filename * period, 3),
+            "filename_count": last_filename - first_filename + 1,
+            "duration": round((last_filename - first_filename + 1) * period, 3),
             "box": (x0, y0, x1 - x0 + 1, y1 - y0 + 1),
         }
 
