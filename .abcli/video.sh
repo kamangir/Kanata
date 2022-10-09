@@ -1,11 +1,13 @@
 #! /usr/bin/env bash
 
+export ABCLI_VIDEO_DEFAULT_SIZE="1280x1024"
+
 function abcli_create_video() {
     local task=$(abcli_unpack_keyword $1)
 
     if [ "$task" == "help" ] ; then
         # https://esahubble.org/press/video_formats/
-        abcli_show_usage "abcli create_video [<.jpg>] [<filename>] [fps=<10>,~rm_frames,resize_to=<720x576>,scale=<1>]" \
+        abcli_show_usage "abcli create_video [<.jpg>] [<filename>] [fps=<10>,~rm_frames,resize_to=<$ABCLI_VIDEO_DEFAULT_SIZE>,scale=<1>]" \
             "$abcli_object_name/<.jpg> [-> <filename>.mp4]."
         return
     fi
