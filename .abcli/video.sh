@@ -20,6 +20,8 @@ function abcli_create_video() {
         rm $video_filename
     fi
 
+    abcli_log "abcli: create-video: $suffix -[$options]-> $video_filename"
+
     local options="$3"
     local fps=$(abcli_option "$options" fps 10)
     local rm_frames=$(abcli_option_int "$options" rm_frames 1)
