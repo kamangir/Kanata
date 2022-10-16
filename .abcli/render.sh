@@ -42,6 +42,7 @@ function abcli_Kanata_render() {
         fps=$KANATA_FPS
 
     abcli_upload open
+
     abcli_publish \
         $abcli_object_name \
         info.mp4
