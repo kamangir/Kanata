@@ -94,5 +94,5 @@ function abcli_youtube() {
         return
     fi
 
-    abcli_log_error "unknown task: youtube '$task'."
+    abcli_log_error "-Kanata: youtube: $task: command not found."
 }
