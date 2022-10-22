@@ -30,9 +30,9 @@ function abcli_Kanata() {
         return
     fi
 
-    local function="abcli_Kanata_$task"
-    if [[ $(type -t $function) == "function" ]] ; then
-        $function "${@:2}"
+    local function_name="abcli_Kanata_$task"
+    if [[ $(type -t $function_name) == "function" ]] ; then
+        $function_name "${@:2}"
         return
     fi
 
