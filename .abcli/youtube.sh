@@ -18,6 +18,8 @@ function abcli_youtube() {
             "<True|False,True|False>."
         abcli_show_usage "abcli youtube search$ABCUL<keyword>" \
             "search in youtube for <keyword>."
+        abcli_show_usage "abcli youtube upload$ABCUL<path/filename.mp4>$ABCUL<title>$ABCUL<description>$ABCUL[tags=<tag-1+tag-2>]" \
+            "upload video to youtube."
         abcli_show_usage "abcli youtube validate" \
             "validate youtube."
 
