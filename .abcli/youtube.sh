@@ -4,17 +4,17 @@ function abcli_youtube() {
     local task=$(abcli_unpack_keyword $1 help)
 
     if [ "$task" == "help" ] ; then
-        abcli_show_usage "abcli youtube browse$ABCUL<video_id>" \
-            "browse youtube/?v=<video_id>."
-        abcli_show_usage "abcli youtube cat$ABCUL<video_id>" \
-            "cat info re youtube/?v=<video_id>."
-        abcli_show_usage "abcli youtube download$ABCUL<video_id>" \
-            "download youtube/?v=<video_id>."
-        abcli_show_usage "abcli youtube duration$ABCUL<video_id>" \
-            "print duration of youtube/?v=<video_id>."
+        abcli_show_usage "abcli youtube browse$ABCUL<video-id>" \
+            "browse youtube/?v=<video-id>."
+        abcli_show_usage "abcli youtube cat$ABCUL<video-id>" \
+            "cat info re youtube/?v=<video-id>."
+        abcli_show_usage "abcli youtube download$ABCUL<video-id>" \
+            "download youtube/?v=<video-id>."
+        abcli_show_usage "abcli youtube duration$ABCUL<video-id>" \
+            "print duration of youtube/?v=<video-id>."
         abcli_show_usage "abcli youtube install" \
             "install youtube."
-        abcli_show_usage "abcli youtube is_CC$ABCUL<video_id_1,video_id_2>" \
+        abcli_show_usage "abcli youtube is_CC$ABCUL<video-id-1,video-id-2>" \
             "<True|False,True|False>."
         abcli_show_usage "abcli youtube search$ABCUL<keyword>" \
             "search in youtube for <keyword>."
