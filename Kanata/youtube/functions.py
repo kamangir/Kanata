@@ -83,34 +83,6 @@ def duration(video_id):
     ).total_seconds()
 
 
-def search(keyword, what="keyword"):
-    from apiclient.discovery import build
-
-    youtube = build("youtube", "v3", developerKey=api_key)
-    if what == "keyword":
-        request = youtube.search().list(
-            q=keyword,
-            part="snippet",
-            type="video",
-            maxResults=10,
-            videoLicense="creativeCommon",
-        )
-    elif what == "channelId":
-        request = youtube.search().list(
-            channelId=keyword,
-            part="snippet",
-            type="video",
-            maxResults=10,
-            videoLicense="creativeCommon",
-        )
-    else:
-        return False, []
-
-    res = request.execute()
-
-    return True, [item["id"]["videoId"] for item in res["items"]]
-
-
 # https://stackoverflow.com/a/56714010/17619982
 def info(video_id, part="contentDetails"):
     response = urllib.request.urlopen(
@@ -141,3 +113,31 @@ def validate():
     youtube = build("youtube", "v3", developerKey=api_key)
     logger.info(f"{NAME}.validate(): {type(youtube)}")
     return True
+
+
+def search(keyword, what="keyword"):
+    from apiclient.discovery import build
+
+    youtube = build("youtube", "v3", developerKey=api_key)
+    if what == "keyword":
+        request = youtube.search().list(
+            q=keyword,
+            part="snippet",
+            type="video",
+            maxResults=10,
+            videoLicense="creativeCommon",
+        )
+    elif what == "channelId":
+        request = youtube.search().list(
+            channelId=keyword,
+            part="snippet",
+            type="video",
+            maxResults=10,
+            videoLicense="creativeCommon",
+        )
+    else:
+        return False, []
+
+    res = request.execute()
+
+    return True, [item["id"]["videoId"] for item in res["items"]]
