@@ -89,6 +89,21 @@ function abcli_youtube() {
         return
     fi
 
+    if [ "$task" == "upload" ] ; then
+        local options=$5
+        local tags=$(abcli_option "$options" tags Kanata)
+        local tags=$(echo $tags | tr + ,)
+
+        python3 -m Kanata.youtube \
+            upload \
+            --filename "$2" \
+            --title "$3" \
+            --description "$4" \
+            --tags "$tags" \
+            ${@:6}
+        return
+    fi
+
     if [ "$task" == "validate" ] ; then
         python3 -m Kanata.youtube \
             validate \
