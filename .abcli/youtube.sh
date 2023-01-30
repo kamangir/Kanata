@@ -18,8 +18,8 @@ function abcli_youtube() {
             "<True|False,True|False>."
         abcli_show_usage "abcli youtube search$ABCUL<keyword>" \
             "search in youtube for <keyword>."
-        abcli_show_usage "abcli youtube upload$ABCUL<path/filename.mp4>$ABCUL<title>$ABCUL<description>$ABCUL[tags=<tag-1+tag-2>]" \
-            "upload video to youtube."
+        abcli_show_usage "abcli youtube upload$ABCUL<path/filename.mp4>" \
+            "upload path/filename.mp4 to youtube and read metadata from path/filename.json."
         abcli_show_usage "abcli youtube validate" \
             "validate youtube."
 
@@ -90,16 +90,10 @@ function abcli_youtube() {
     fi
 
     if [ "$task" == "upload" ] ; then
-        local options=$5
-        local tags=$(abcli_option "$options" tags Kanata)
-
         python3 -m Kanata.youtube \
             upload \
             --filename "$2" \
-            --title "$3" \
-            --description "$4" \
-            --tags "$tags" \
-            ${@:6}
+            ${@:3}
         return
     fi
 

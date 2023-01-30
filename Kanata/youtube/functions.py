@@ -149,6 +149,14 @@ def upload(
     description,
     tags,
 ):
+    _, metadata = file.load_json(
+        file.set_extension(filename, "json"),
+        civilized=True,
+    )
+    title = metadata.get["title", f"Kanata upload {string.pretty_date()}"]
+    description = metadata.get["description", "Validation video."]
+    tags = metadata.get["tags", "Kanata"].split(",")
+
     logger.info(
         f"{NAME}.upload({filename}) - {title} - {description}: {','.join(tags)}"
     )
