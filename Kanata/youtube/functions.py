@@ -141,3 +141,16 @@ def search(keyword, what="keyword"):
     res = request.execute()
 
     return True, [item["id"]["videoId"] for item in res["items"]]
+
+
+def upload(
+    filename,
+    title,
+    description,
+    tags,
+):
+    logger.info(
+        f"{NAME}.upload({filename}) - {title} - {description}: {','.join(tags)}"
+    )
+
+    return True

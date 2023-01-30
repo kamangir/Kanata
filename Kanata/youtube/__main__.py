@@ -10,7 +10,17 @@ parser.add_argument(
     "task",
     type=str,
     default="",
-    help="cat|download|duration|search|is_CC|validate",
+    help="cat|download|duration|search|is_CC|upload|validate",
+)
+parser.add_argument(
+    "--description",
+    type=str,
+    default="",
+)
+parser.add_argument(
+    "--filename",
+    type=str,
+    default="",
 )
 parser.add_argument(
     "--keyword",
@@ -22,6 +32,17 @@ parser.add_argument(
     type=str,
     default="contentDetails",
     help="contentDetails|status",
+)
+parser.add_argument(
+    "--tags",
+    type=str,
+    help="tag_1,tag_2",
+    default="",
+)
+parser.add_argument(
+    "--title",
+    type=str,
+    default="",
 )
 parser.add_argument(
     "--video_id",
@@ -52,6 +73,13 @@ elif args.task == "search":
     success, list_of_video_id = search(args.keyword, args.what)
     if success:
         print(",".join(list_of_video_id))
+elif args.task == "upload":
+    success = upload(
+        args.filename,
+        args.title,
+        args.description,
+        args.tags.split("+"),
+    )
 elif args.task == "validate":
     success = validate()
 else:
