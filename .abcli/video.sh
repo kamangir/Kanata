@@ -83,10 +83,10 @@ function abcli_create_video() {
         rm -v $object_path/*.$extension
     fi
 
-    abcli_metadata update \
+    abcli_metadata post \
         fps "$fps" \
         - $object_name
-    abcli_metadata update \
+    abcli_metadata post \
         size "$size" \
         - $object_name
 
