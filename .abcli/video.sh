@@ -83,16 +83,12 @@ function abcli_create_video() {
         rm -v $object_path/*.$extension
     fi
 
-    python3 -m abcli.plugins.metadata \
-        update \
-        --keyword fps \
-        --content $fps \
-        --object_path $object_path
-    python3 -m abcli.plugins.metadata \
-        update \
-        --keyword size \
-        --content $size \
-        --object_path $object_path
+    abcli_metadata update \
+        fps "$fps" \
+        - $object_name
+    abcli_metadata update \
+        size "$size" \
+        - $object_name
 
     rm -rfv $temp_path
 
