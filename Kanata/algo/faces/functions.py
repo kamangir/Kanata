@@ -10,8 +10,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-abcli_object_root = os.getenv("abcli_object_root", "")
-
 
 def match(
     face_1,

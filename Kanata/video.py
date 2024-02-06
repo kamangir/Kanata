@@ -2,6 +2,7 @@ import numpy as np
 import os.path
 import random
 from abcli import file
+from abcli.path import abcli_object_root
 from abcli.modules import objects
 from abcli.plugins.storage import instance as storage
 from abcli.plugins import relations
@@ -109,7 +110,7 @@ class Video(object):
             tags.set_(object, "used_for_{}".format(objects.abcli_object_name))
 
             success, info = file.load_json(
-                os.path.join(objects.abcli_object_root_folder, object, "0/faces.json")
+                os.path.join(abcli_object_root, object, "0/faces.json")
             )
             if not success:
                 continue
@@ -279,7 +280,7 @@ class Video(object):
 
                         success_, image_ = file.load_image(
                             os.path.join(
-                                objects.abcli_object_root_folder,
+                                abcli_object_root,
                                 "{}/{}/face_{:05d}.jpg".format(
                                     object, int(face_id) + 1, index
                                 ),

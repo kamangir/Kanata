@@ -3,6 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from .functions import *
 from abcli import file, path
+from abcli.path import abcli_object_root
 from abcli.modules import objects
 import abcli.logging
 import logging
