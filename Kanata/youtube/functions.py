@@ -24,7 +24,7 @@ def download(video_id, filename=""):
     from pytube import YouTube
 
     if not filename:
-        filename = os.path.join(os.getenv("abcli_asset_folder", ""), "video.mp4")
+        filename = os.path.join(env.abcli_object_path, "video.mp4")
 
     try:
         yt = YouTube(f"https://www.youtube.com/watch?v={video_id}")
@@ -33,7 +33,7 @@ def download(video_id, filename=""):
             '{}.download({}->{}): "{}"'.format(
                 NAME,
                 video_id,
-                os.getenv("abcli_asset_name", ""),
+                env.abcli_object_name,
                 yt.title,
             )
         )

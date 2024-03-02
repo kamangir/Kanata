@@ -1,9 +1,7 @@
 import numpy as np
 import os.path
 import random
-from abcli import file
-from abcli.path import abcli_object_root
-from abcli.modules import objects
+from abcli import env, file
 from abcli.plugins.storage import instance as storage
 from abcli.plugins import relations
 from abcli.plugins import tags
@@ -59,9 +57,11 @@ class Video(object):
     def ingest(self):
         logger.info(
             "video.ingest: {}{}{}".format(
-                "<={} object(s) ".format(self.max_object_count)
-                if self.max_object_count != -1
-                else "",
+                (
+                    "<={} object(s) ".format(self.max_object_count)
+                    if self.max_object_count != -1
+                    else ""
+                ),
                 ">{:.2f} ".format(self.occupancy) if self.occupancy != -1 else "",
                 skew_as_string(self.skew),
             )
@@ -85,7 +85,7 @@ class Video(object):
 
             object = tags.search(
                 [
-                    f"~used_for_{objects.abcli_object_name}",
+                    f"~used_for_{env.abcli_object_name}",
                     f"Kanata_slice_{self.job_id}",
                     "faces",
                     "track",
@@ -106,11 +106,11 @@ class Video(object):
             ):
                 continue
 
-            relations.set_(objects.abcli_object_name, object, "used")
-            tags.set_(object, "used_for_{}".format(objects.abcli_object_name))
+            relations.set_(env.abcli_object_name, object, "used")
+            tags.set_(object, "used_for_{}".format(env.abcli_object_name))
 
             success, info = file.load_json(
-                os.path.join(abcli_object_root, object, "0/faces.json")
+                os.path.join(env.abcli_object_root, object, "0/faces.json")
             )
             if not success:
                 continue
@@ -280,7 +280,7 @@ class Video(object):
 
                         success_, image_ = file.load_image(
                             os.path.join(
-                                abcli_object_root,
+                                env.abcli_object_root,
                                 "{}/{}/face_{:05d}.jpg".format(
                                     object, int(face_id) + 1, index
                                 ),
@@ -321,7 +321,7 @@ class Video(object):
 
             file.save_image(
                 os.path.join(
-                    os.getenv("abcli_object_path", ""),
+                    env.abcli_object_path,
                     "info.jpg",
                 ),
                 add_signature(

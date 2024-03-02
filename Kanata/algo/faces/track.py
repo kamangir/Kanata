@@ -2,8 +2,7 @@ from matplotlib import cm
 import numpy as np
 from tqdm import tqdm
 from .functions import *
-from abcli import file, path
-from abcli.path import abcli_object_root
+from abcli import env, file, path
 from abcli.modules import objects
 import abcli.logging
 import logging
@@ -46,7 +45,9 @@ def track(
     error_filenames = []
     for filename in tqdm(list_of_files):
         if visualize:
-            success_, image = file.load_image(os.path.join(abcli_object_root, filename))
+            success_, image = file.load_image(
+                os.path.join(env.abcli_object_root, filename)
+            )
             if not success_:
                 error_filenames += [filename]
                 continue
@@ -60,7 +61,7 @@ def track(
 
         success_, info = file.load_json(
             os.path.join(
-                abcli_object_root,
+                env.abcli_object_root,
                 source,
                 file.set_extension(
                     file.add_postfix(filename, "face"),
@@ -160,7 +161,7 @@ def track(
             if crop:
                 success_, image = file.load_image(
                     os.path.join(
-                        abcli_object_root, source, "Data", filename, "camera.jpg"
+                        env.abcli_object_root, source, "Data", filename, "camera.jpg"
                     )
                 )
                 if not success_:
@@ -183,7 +184,7 @@ def track(
                     x, y, width, height = face["box"]
                     file.save_image(
                         os.path.join(
-                            abcli_object_root,
+                            env.abcli_object_root,
                             destination,
                             "Data",
                             str(face["id"] + 1),
@@ -237,7 +238,7 @@ def track(
 
     if visualize:
         file.save_image(
-            os.path.join(abcli_object_root, destination, "info.jpg"),
+            os.path.join(env.abcli_object_root, destination, "info.jpg"),
             add_signature(
                 foreground,
                 [
@@ -257,7 +258,7 @@ def track(
         )
 
         file.save_image(
-            os.path.join(abcli_object_root, destination, "background.jpg"),
+            os.path.join(env.abcli_object_root, destination, "background.jpg"),
             background,
         )
 
@@ -292,7 +293,7 @@ def track(
         }
 
     file.save_json(
-        os.path.join(abcli_object_root, destination, f"{NAME}.json"),
+        os.path.join(env.abcli_object_root, destination, f"{NAME}.json"),
         output,
     )
 

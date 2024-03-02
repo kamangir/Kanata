@@ -1,17 +1,13 @@
 import os.path
-from abcli import file
+from abcli import env, file
 from abcli import string
 from abcli.modules import objects
 from abcli.modules import host
 from abcli.plugins import graphics
-from abcli.plugins.storage import instance as storage
 from . import NAME
 from .consts import *
 from .video import Video
-import abcli.logging
-import logging
-
-logger = logging.getLogger(__name__)
+from abcli.logging import logger
 
 
 def render(
@@ -24,9 +20,7 @@ def render(
     **kwargs,
 ):
 
-    logger.info(
-        f"{NAME}.render({objects.abcli_object_name}): {image_height}x{image_width}"
-    )
+    logger.info(f"{NAME}.render({env.abcli_object_name}): {image_height}x{image_width}")
 
     video = Video(cols, rows, frame_count, **kwargs)
 
@@ -34,10 +28,7 @@ def render(
         return False
 
     if not video.save_composition(
-        os.path.join(
-            os.getenv("abcli_object_path", ""),
-            "composition.json",
-        )
+        os.path.join(env.abcli_object_path, "composition.json")
     ):
         return False
 
