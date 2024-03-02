@@ -3,9 +3,9 @@ import json
 import os
 import os.path
 import urllib.request
+from abcli import env
 from abcli import file
 from abcli import string
-from abcli.modules.cookie import cookie
 from . import NAME
 import abcli.logging
 import logging
@@ -16,7 +16,7 @@ logging.getLogger("googleapicliet.discovery_cache").setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
 # https://medium.com/daily-python/python-script-to-search-content-using-youtube-data-api-daily-python-8-1084776a6578
-api_key = cookie.get("youtube.api_key", "")
+api_key = env.abcli_youtube_api_key
 
 
 def download(video_id, filename=""):
